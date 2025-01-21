@@ -1,14 +1,15 @@
+"use client";
 import { data } from "@/../public/data/data";
+import grant2024 from "@/../public/data/grant_2024.json";
 import { Barplot } from "@/components/charts/barplot/Barplot";
+import { ResponsiveCross } from "@/components/charts/cross/Cross";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export default function Home() {
   return (
     <main>
       <div className="w-full h-[clamp(200px,15vw,500px)] bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white mb-8">
-        <h1 className="text-3xl md:text-5xl font-bold">
-          Welcome to the Banner
-        </h1>
+        <ResponsiveCross data={grant2024} />
       </div>
       <div className="container mx-auto px-4 py-6 " style={{ maxWidth: 900 }}>
         <h1>Dataviz project Boilerplate</h1>
