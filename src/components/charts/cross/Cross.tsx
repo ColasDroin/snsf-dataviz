@@ -56,45 +56,86 @@ export const Cross = ({ width, height, data }: CrossProps) => {
         key={d.id}
         cx={d.cx}
         cy={d.cy}
-        r={d.r}
+        r={d.r > 0 ? d.r : 0}
         fill="white"
         className={styles.circle}
       />
     );
   });
 
+  // Get coordinates cross extremities (8 cx and cy values)
+  const topMost = data_rescaled.reduce((a, b) => (a.cy < b.cy ? a : b)); // Smallest cy
+  const bottomMost = data_rescaled.reduce((a, b) => (a.cy > b.cy ? a : b)); // Largest cy
+  const leftMost = data_rescaled.reduce((a, b) => (a.cx < b.cx ? a : b)); // Smallest cx
+  const rightMost = data_rescaled.reduce((a, b) => (a.cx > b.cx ? a : b)); // Largest cx
+
+  // Intermediate positions
+  const middleTop = { cx: (leftMost.cx + rightMost.cx) / 2, cy: topMost.cy };
+  const middleBottom = {
+    cx: (leftMost.cx + rightMost.cx) / 2,
+    cy: bottomMost.cy,
+  };
+  const middleLeft = { cx: leftMost.cx, cy: (topMost.cy + bottomMost.cy) / 2 };
+  const middleRight = {
+    cx: rightMost.cx,
+    cy: (topMost.cy + bottomMost.cy) / 2,
+  };
+
+  // Cross extremities
+  const crossExtremities = [
+    { cx: leftMost.cx, cy: topMost.cy }, // Top-left
+    { cx: rightMost.cx, cy: topMost.cy }, // Top-right
+    { cx: leftMost.cx, cy: bottomMost.cy }, // Bottom-left
+    { cx: rightMost.cx, cy: bottomMost.cy }, // Bottom-right
+    middleTop, // Middle-top
+    middleBottom, // Middle-bottom
+    middleLeft, // Middle-left
+    middleRight, // Middle-right
+  ];
+
+  // Log or use these values
+  console.log("Cross extremities:", crossExtremities);
+
   // Define positions for the text "SNSF" in between the arms of the cross
-  const textPositions = [
-    { x: MARGIN.left / 2, y: MARGIN.top, anchor: "start" }, // Top left
+  const text = [
     {
-      x: boundsWidth - MARGIN.left / 2,
-      y: MARGIN.top,
+      x: (middleLeft.cx + middleTop.cx) / 2,
+      y: (middleLeft.cy + middleTop.cy) / 2,
       anchor: "end",
+      text: "SNSF",
+    }, // Top left
+    {
+      x: (middleRight.cx + middleTop.cx) / 2,
+      y: (middleRight.cy + middleTop.cy) / 2,
+      anchor: "start",
+      text: "SNF",
     }, // Top right
     {
-      x: MARGIN.left / 2,
-      y: boundsHeight - MARGIN.top,
-      anchor: "start",
+      x: (middleLeft.cx + middleBottom.cx) / 2,
+      y: (middleLeft.cy + middleBottom.cy) / 2,
+      anchor: "end",
+      text: "FNS",
     }, // Bottom left
     {
-      x: boundsWidth - MARGIN.left / 2,
-      y: boundsHeight - MARGIN.top,
-      anchor: "end",
+      x: (middleRight.cx + middleBottom.cx) / 2,
+      y: (middleRight.cy + middleBottom.cy) / 2,
+      anchor: "start",
+      text: "",
     }, // Bottom right
   ];
 
-  const allTexts = textPositions.map((pos, i) => (
+  const allTexts = text.map((pos, i) => (
     <text
       key={i}
       x={pos.x}
       y={pos.y}
-      textAnchor="middle"
+      textAnchor={pos.anchor}
       dominantBaseline="middle"
       fill="white"
       fontSize="16"
       className={styles.text}
     >
-      SNSF
+      {pos.text}
     </text>
   ));
 
