@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react";
 import { useDimensions } from "../use-dimensions";
-
+import { packCirclesInCross } from "./use-cross-packing";
 const MARGIN = { top: 30, right: 30, bottom: 30, left: 30 };
 
 type ResponsiveCrossProps = {
@@ -30,19 +30,39 @@ export const Cross = ({ width, height, data }: CrossProps) => {
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
+  // Suppose you have these radii:
+  const radii = data.map((d) => Math.log2(d.amount) / 10);
+
+  // Cross dimensions:
+  const crossWidth = 1000;
+  const crossHeight = 1000;
+  const crossThickness = 40;
+  const padding = 2;
+  const iterationCount = 1000;
+
+  // Run the packing:
+  const placements = packCirclesInCross(
+    radii,
+    crossWidth,
+    crossHeight,
+    crossThickness,
+    padding,
+    iterationCount
+  );
+
   // Build the shapes
-  const allShapes = data.map((d, i) => {
+  const allShapes = placements.map((d, i) => {
     return (
       <circle
-        key={d.id}
-        cx={i * 100}
-        cy={100}
-        r={d.amount * 0.0001}
-        opacity={0.7}
-        stroke="#9d174d"
+        key={i}
+        cx={300 + d.x}
+        cy={100 + d.y}
+        r={d.r}
+        //opacity={0.7}
+        //stroke="#9d174d"
         fill="#9d174d"
-        fillOpacity={0.3}
-        strokeWidth={1}
+        //fillOpacity={0.3}
+        //strokeWidth={1}
       />
     );
   });
