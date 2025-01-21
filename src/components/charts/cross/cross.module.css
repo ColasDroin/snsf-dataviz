@@ -1,0 +1,12 @@
+.circle {
+  fill-opacity: 0.95;
+}
+
+.circle:hover {
+  opacity: 1;
+  fill-opacity: 1;
+  fill: gold;
+  stroke-width: 10px;
+  stroke: gold;
+  z-index: 10000;
+}

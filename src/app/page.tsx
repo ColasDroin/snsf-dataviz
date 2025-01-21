@@ -1,6 +1,6 @@
 "use client";
 import { data } from "@/../public/data/data";
-import grant2024 from "@/../public/data/grant_2024.json";
+import circles2024 from "@/../public/data/grant_2024_circles.json";
 import { Barplot } from "@/components/charts/barplot/Barplot";
 import { ResponsiveCross } from "@/components/charts/cross/Cross";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -8,8 +8,10 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 export default function Home() {
   return (
     <main>
-      <div className="w-full h-[clamp(200px,15vw,500px)] bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white mb-8">
-        <ResponsiveCross data={grant2024} />
+      <div className="w-full h-[clamp(200px,20vw,700px)] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-700 to-red-600 flex items-center justify-center text-white mb-8">
+        <div className="flex items-center justify-center h-full max-w-full aspect-square">
+          <ResponsiveCross data={circles2024} />
+        </div>
       </div>
       <div className="container mx-auto px-4 py-6 " style={{ maxWidth: 900 }}>
         <h1>Dataviz project Boilerplate</h1>

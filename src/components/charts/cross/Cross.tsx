@@ -1,10 +1,13 @@
 import { useMemo, useRef } from "react";
 import { useDimensions } from "../use-dimensions";
-import { packCirclesInCross } from "./use-cross-packing";
-const MARGIN = { top: 30, right: 30, bottom: 30, left: 30 };
+import { scaleLinear } from "d3-scale";
+import { extent } from "d3-array";
+import styles from "./cross.module.css";
+
+const MARGIN = { top: 15, right: 15, bottom: 15, left: 15 };
 
 type ResponsiveCrossProps = {
-  data: { id: number; title: string; amount: number; year: number }[];
+  data: { id: number; cx: number; cy: number; r: number }[];
 };
 
 export const ResponsiveCross = (props: ResponsiveCrossProps) => {
@@ -22,7 +25,7 @@ export const ResponsiveCross = (props: ResponsiveCrossProps) => {
 type CrossProps = {
   width: number;
   height: number;
-  data: { id: number; title: string; amount: number; year: number }[];
+  data: { id: number; cx: number; cy: number; r: number }[];
 };
 
 export const Cross = ({ width, height, data }: CrossProps) => {
@@ -30,42 +33,71 @@ export const Cross = ({ width, height, data }: CrossProps) => {
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
-  // Suppose you have these radii:
-  const radii = data.map((d) => Math.log2(d.amount) / 10);
+  // Rescale the data to fit the bounds
+  const Scale = useMemo(() => {
+    const xValues = data.map((d) => d.cx);
+    return scaleLinear().domain(extent(xValues)).range([0, boundsHeight]);
+  }, [data, boundsHeight]);
 
-  // Cross dimensions:
-  const crossWidth = 1000;
-  const crossHeight = 1000;
-  const crossThickness = 40;
-  const padding = 2;
-  const iterationCount = 1000;
-
-  // Run the packing:
-  const placements = packCirclesInCross(
-    radii,
-    crossWidth,
-    crossHeight,
-    crossThickness,
-    padding,
-    iterationCount
-  );
+  // Update the data with the scaled values
+  const data_rescaled = data.map((d) => {
+    return {
+      ...d,
+      cx: Scale(d.cx),
+      cy: Scale(d.cy),
+      r: Scale(d.r),
+    };
+  });
 
   // Build the shapes
-  const allShapes = placements.map((d, i) => {
+  const allShapes = data_rescaled.map((d, i) => {
     return (
       <circle
-        key={i}
-        cx={300 + d.x}
-        cy={100 + d.y}
+        key={d.id}
+        cx={d.cx}
+        cy={d.cy}
         r={d.r}
-        //opacity={0.7}
-        //stroke="#9d174d"
-        fill="#9d174d"
-        //fillOpacity={0.3}
-        //strokeWidth={1}
+        fill="white"
+        className={styles.circle}
       />
     );
   });
+
+  // Define positions for the text "SNSF" in between the arms of the cross
+  const textPositions = [
+    { x: MARGIN.left / 2, y: MARGIN.top, anchor: "start" }, // Top left
+    {
+      x: boundsWidth - MARGIN.left / 2,
+      y: MARGIN.top,
+      anchor: "end",
+    }, // Top right
+    {
+      x: MARGIN.left / 2,
+      y: boundsHeight - MARGIN.top,
+      anchor: "start",
+    }, // Bottom left
+    {
+      x: boundsWidth - MARGIN.left / 2,
+      y: boundsHeight - MARGIN.top,
+      anchor: "end",
+    }, // Bottom right
+  ];
+
+  const allTexts = textPositions.map((pos, i) => (
+    <text
+      key={i}
+      x={pos.x}
+      y={pos.y}
+      textAnchor="middle"
+      dominantBaseline="middle"
+      fill="white"
+      fontSize="16"
+      className={styles.text}
+    >
+      SNSF
+    </text>
+  ));
+
   return (
     <div>
       <svg width={width} height={height}>
@@ -75,6 +107,7 @@ export const Cross = ({ width, height, data }: CrossProps) => {
           transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
         >
           {allShapes}
+          {allTexts}
         </g>
       </svg>
     </div>
