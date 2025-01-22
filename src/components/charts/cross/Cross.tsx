@@ -2,12 +2,12 @@ import { useMemo, useRef } from "react";
 import { useDimensions } from "../use-dimensions";
 import { scaleLinear } from "d3-scale";
 import { extent } from "d3-array";
-import styles from "./cross.module.css";
+
+import styles from "./Cross.module.css";
 const MARGIN = { top: 15, right: 15, bottom: 15, left: 15 };
 
 type ResponsiveCrossProps = {
   data: { id: number; cx: number; cy: number; r: number }[];
-  displayText?: boolean;
 };
 
 export const ResponsiveCross = (props: ResponsiveCrossProps) => {
@@ -26,15 +26,9 @@ type CrossProps = {
   width: number;
   height: number;
   data: { id: number; cx: number; cy: number; r: number }[];
-  displayText?: boolean;
 };
 
-export const Cross = ({
-  width,
-  height,
-  data,
-  displayText = true,
-}: CrossProps) => {
+export const Cross = ({ width, height, data }: CrossProps) => {
   // bounds = area inside the graph axis = calculated by substracting the margins
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
@@ -68,23 +62,6 @@ export const Cross = ({
       />
     );
   });
-
-  // Return just the circles with no text if displayText is false
-  if (!displayText) {
-    return (
-      <div>
-        <svg width={width} height={height}>
-          <g
-            width={boundsWidth}
-            height={boundsHeight}
-            transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
-          >
-            {allShapes}
-          </g>
-        </svg>
-      </div>
-    );
-  }
 
   // Get coordinates cross extremities (8 cx and cy values)
   const topMost = data_rescaled.reduce((a, b) => (a.cy < b.cy ? a : b)); // Smallest cy

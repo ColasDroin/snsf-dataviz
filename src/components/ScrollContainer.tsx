@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import { Scrollama, Step } from "react-scrollama";
-import circles2024 from "@/../public/data/grant_2024_circles.json";
-import { ResponsiveCross } from "@/components/charts/cross/Cross";
-
+import { SwitchChart } from "@/components/SwitchChart";
 export const ScrollContainer = () => {
-  const [currentDisplayText, setCurrentDisplayText] = useState(true);
+  const [currentChart, setCurrentChart] = useState("cross");
 
-  const onStepEnter = ({ data }) => {
-    setCurrentDisplayText(false);
-    console.log("onStepEnter", currentDisplayText);
+  const onStepEnter = ({ stepIndex }) => {
+    setCurrentChart("packedCircles");
+    console.log("onStepEnter", stepIndex);
   };
 
-  const onStepExit = ({ data }) => {
-    setCurrentDisplayText(true);
-    console.log("onStepExit", currentDisplayText);
+  const onStepExit = ({ stepIndex }) => {
+    setCurrentChart("cross");
+    console.log("onStepExit", stepIndex);
   };
 
   return (
@@ -26,11 +24,10 @@ export const ScrollContainer = () => {
         className="h-[50vh] max-w-full aspect-square"
         style={{ position: "sticky", top: "15vh", border: "1px solid orchid" }}
       >
-        <ResponsiveCross data={circles2024} displayText={currentDisplayText} />
+        <SwitchChart chartType={currentChart} />
       </div>
       <p className="text-sm md:text-4xl font-bold text-center h-[15vh] flex items-center justify-center">
         A visual story about the Swiss National Science Foundation{" "}
-        {currentDisplayText}
       </p>
       {/* </div> */}
       <Scrollama

@@ -1,9 +1,5 @@
 "use client";
-import { data } from "@/../public/data/data";
-import circles2024 from "@/../public/data/grant_2024_circles.json";
-import { Barplot } from "@/components/charts/barplot/Barplot";
-import { ResponsiveCross } from "@/components/charts/cross/Cross";
-import { ScrollContainer } from "@/components/scrollContainer";
+import { ScrollContainer } from "@/components/ScrollContainer";
 export default function Home() {
   return (
     <main>
