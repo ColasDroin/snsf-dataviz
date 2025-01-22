@@ -3,7 +3,7 @@ import { data } from "@/../public/data/data";
 import circles2024 from "@/../public/data/grant_2024_circles.json";
 import { Barplot } from "@/components/charts/barplot/Barplot";
 import { ResponsiveCross } from "@/components/charts/cross/Cross";
-import { ScrollamaDemo } from "@/components/Test";
+import { ScrollContainer } from "@/components/ScrollContainer";
 export default function Home() {
   return (
     <main>
@@ -23,7 +23,7 @@ export default function Home() {
         className="container mx-auto px-4 py-6 "
         style={{ maxWidth: 900 }}
       ></div>
-      <ScrollamaDemo />
+      <ScrollContainer />
       <div className="container mx-auto px-4 py-6 " style={{ maxWidth: 900 }}>
         <h3 className="text-red-800 text-center mb-[100vh]">
           How is Swiss research funded?

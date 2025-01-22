@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Scrollama, Step } from "react-scrollama";
 
-export const ScrollamaDemo = () => {
+export const ScrollContainer = () => {
   const [currentStepIndex, setCurrentStepIndex] = useState(null);
 
   // This callback fires when a Step hits the offset threshold. It receives the
@@ -12,7 +12,9 @@ export const ScrollamaDemo = () => {
 
   return (
     <div style={{ margin: "50vh 0", border: "2px dashed skyblue" }}>
-      <div style={{ position: "sticky", top: 0, border: "1px solid orchid" }}>
+      <div
+        style={{ position: "sticky", top: "30vh", border: "1px solid orchid" }}
+      >
         I'm sticky. The current triggered step index is: {currentStepIndex}
       </div>
       <Scrollama offset={0.2} onStepEnter={onStepEnter} debug>
