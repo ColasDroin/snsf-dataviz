@@ -8,7 +8,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 export default function Home() {
   return (
     <main>
-      <div className="w-full h-[clamp(200px,20vw,700px)] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-700 to-red-600 flex items-center justify-center text-white mb-8">
+      <div className="w-full h-[clamp(200px,50vw,700px)] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-700 to-red-600 flex items-center justify-center text-white mb-8">
         <div className="flex items-center justify-center h-full max-w-full aspect-square">
           <ResponsiveCross data={circles2024} />
         </div>

@@ -3,7 +3,6 @@ import { useDimensions } from "../use-dimensions";
 import { scaleLinear } from "d3-scale";
 import { extent } from "d3-array";
 import styles from "./cross.module.css";
-
 const MARGIN = { top: 15, right: 15, bottom: 15, left: 15 };
 
 type ResponsiveCrossProps = {
@@ -93,9 +92,6 @@ export const Cross = ({ width, height, data }: CrossProps) => {
     middleRight, // Middle-right
   ];
 
-  // Log or use these values
-  console.log("Cross extremities:", crossExtremities);
-
   // Define positions for the text "SNSF" in between the arms of the cross
   const text = [
     {
@@ -116,12 +112,12 @@ export const Cross = ({ width, height, data }: CrossProps) => {
       anchor: "end",
       text: "FNS",
     }, // Bottom left
-    {
-      x: (middleRight.cx + middleBottom.cx) / 2,
-      y: (middleRight.cy + middleBottom.cy) / 2,
-      anchor: "start",
-      text: "",
-    }, // Bottom right
+    // {
+    //   x: (middleRight.cx + middleBottom.cx) / 2,
+    //   y: (middleRight.cy + middleBottom.cy) / 2,
+    //   anchor: "start",
+    //   text: "",
+    // }, // Bottom right
   ];
 
   const allTexts = text.map((pos, i) => (
@@ -149,6 +145,12 @@ export const Cross = ({ width, height, data }: CrossProps) => {
         >
           {allShapes}
           {allTexts}
+          <image
+            href={"/images/logo.svg"}
+            x={(middleRight.cx + middleBottom.cx) / 2}
+            y={(middleRight.cy + middleBottom.cy) / 2.15}
+            width={boundsWidth * 0.15} // Scale the width to 10% of the bounds width
+          />
         </g>
       </svg>
     </div>
