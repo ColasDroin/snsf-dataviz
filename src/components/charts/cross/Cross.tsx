@@ -2,6 +2,7 @@ import { useMemo, useRef } from "react";
 import { useDimensions } from "../use-dimensions";
 import { scaleLinear } from "d3-scale";
 import { extent } from "d3-array";
+import { Circle } from "@/components/charts/animation/Circle";
 
 import styles from "./Cross.module.css";
 const MARGIN = { top: 15, right: 15, bottom: 15, left: 15 };
@@ -52,13 +53,13 @@ export const Cross = ({ width, height, data }: CrossProps) => {
   // Build the shapes
   const allShapes = data_rescaled.map((d, i) => {
     return (
-      <circle
+      <Circle
         key={d.id}
         cx={d.cx}
         cy={d.cy}
         r={d.r > 0 ? d.r : 0}
         fill="white"
-        className={styles.circle}
+        //className={styles.circle}
       />
     );
   });

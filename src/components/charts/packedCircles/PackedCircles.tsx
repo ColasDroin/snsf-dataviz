@@ -2,13 +2,13 @@ import { useMemo, useRef } from "react";
 import { useDimensions } from "../use-dimensions";
 import { pack } from "d3-hierarchy";
 import { hierarchy } from "d3-hierarchy";
+import { Circle } from "@/components/charts/animation/Circle";
 
 //import styles from "./PackedCircles.module.css";
 const MARGIN = { top: 15, right: 15, bottom: 15, left: 15 };
 
 type ResponsivePackedCirclesProps = {
   data: { id: number; cx: number; cy: number; r: number }[];
-  displayText?: boolean;
 };
 
 export const ResponsivePackedCircles = (
@@ -46,12 +46,13 @@ export const PackedCircles = ({ width, height, data }: PackedCirclesProps) => {
       hierarchy({ children: data }).sum((d) => d.r)
     );
 
+  console.log("OK so far");
   // Get the packed data
   const packedData = repack(data);
+  console.log("OK so far 2");
 
   // Get the circles from the packed data
   const circles = packedData.descendants().slice(1);
-
   // Return the circles
   return (
     <div>
@@ -62,11 +63,11 @@ export const PackedCircles = ({ width, height, data }: PackedCirclesProps) => {
           transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
         >
           {circles.map((circle, i) => (
-            <circle
-              key={i}
+            <Circle
+              key={circle.data.id}
               cx={circle.x}
               cy={circle.y}
-              r={circle.r}
+              r={circle.r > 0 ? circle.r : 0}
               fill="white"
               //className={styles.circle}
             />
