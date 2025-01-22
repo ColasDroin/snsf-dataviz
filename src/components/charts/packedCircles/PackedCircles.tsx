@@ -36,23 +36,23 @@ type PackedCirclesProps = {
 };
 
 export const PackedCircles = ({ width, height, data }: PackedCirclesProps) => {
+  if (width === 0) return null;
+
   // bounds = area inside the graph axis = calculated by substracting the margins
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
   // Pack all the circle with D3 circle packing
-  const repack = (data) =>
+  const repack = (dataToPack) =>
     pack().size([boundsWidth, boundsHeight]).padding(3)(
-      hierarchy({ children: data }).sum((d) => d.r)
+      hierarchy({ children: dataToPack }).sum((d) => d.r)
     );
-
-  console.log("OK so far");
   // Get the packed data
   const packedData = repack(data);
-  console.log("OK so far 2");
 
   // Get the circles from the packed data
   const circles = packedData.descendants().slice(1);
+
   // Return the circles
   return (
     <div>

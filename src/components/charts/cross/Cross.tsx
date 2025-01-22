@@ -30,6 +30,8 @@ type CrossProps = {
 };
 
 export const Cross = ({ width, height, data }: CrossProps) => {
+  if (width === 0) return null;
+
   // bounds = area inside the graph axis = calculated by substracting the margins
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
@@ -51,18 +53,16 @@ export const Cross = ({ width, height, data }: CrossProps) => {
   });
 
   // Build the shapes
-  const allShapes = data_rescaled.map((d, i) => {
-    return (
-      <Circle
-        key={d.id}
-        cx={d.cx}
-        cy={d.cy}
-        r={d.r > 0 ? d.r : 0}
-        fill="white"
-        //className={styles.circle}
-      />
-    );
-  });
+  const allShapes = data_rescaled.map((d, i) => (
+    <Circle
+      key={d.id}
+      cx={d.cx}
+      cy={d.cy}
+      r={d.r > 0 ? d.r : 0}
+      fill="white"
+      //className={styles.circle}
+    />
+  ));
 
   // Get coordinates cross extremities (8 cx and cy values)
   const topMost = data_rescaled.reduce((a, b) => (a.cy < b.cy ? a : b)); // Smallest cy
