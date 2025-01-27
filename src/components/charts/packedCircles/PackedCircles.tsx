@@ -95,16 +95,34 @@ export const packedLayout = (data: any, width: number, height: number) => {
   // Get the circles from the packed data
   const circlesData = packedData.descendants().slice(1);
 
+  // Rename the properties to match the Circle component
+  circlesData.forEach((circle) => {
+    circle.cx = circle.x;
+    circle.cy = circle.y;
+    circle.id = circle.data.id;
+
+    delete circle.x;
+    delete circle.y;
+  });
+
   const circles = circlesData.map((circle, i) => (
     <Circle
-      key={circle.data.id}
-      cx={circle.x}
-      cy={circle.y}
+      key={circle.id}
+      cx={circle.cx}
+      cy={circle.cy}
       r={circle.r > 0 ? circle.r : 0}
       fill="white"
+      delay={i}
       //className={styles.circle}
     />
   ));
+
+  // const circles = circlesData.map((circle, i) => ({
+  //   id: circle.id,
+  //   cx: circle.cx,
+  //   cy: circle.cy,
+  //   r: circle.r > 0 ? circle.r : 0,
+  // }));
 
   return {
     circles,

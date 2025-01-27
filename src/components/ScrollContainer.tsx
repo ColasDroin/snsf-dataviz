@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Scrollama, Step } from "react-scrollama";
 import { ResponsiveCircleChart } from "@/components/charts/CircleChart";

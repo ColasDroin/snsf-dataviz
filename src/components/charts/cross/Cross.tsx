@@ -77,8 +77,6 @@ export const crossLayout = (data: any, width: number, height: number) => {
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
-  console.log("CALLED");
-
   // Rescale the data to fit the bounds
   const Scale = scaleLinear()
     .domain(extent(data, (d) => d.cx))
@@ -102,9 +100,12 @@ export const crossLayout = (data: any, width: number, height: number) => {
       cy={d.cy}
       r={d.r > 0 ? d.r : 0}
       fill="white"
+      delay={i}
       //className={styles.circle}
     />
   ));
+
+  // const circles = data_rescaled;
 
   // Get coordinates cross extremities (8 cx and cy values)
   const topMost = data_rescaled.reduce((a, b) => (a.cy < b.cy ? a : b)); // Smallest cy
@@ -188,6 +189,6 @@ export const crossLayout = (data: any, width: number, height: number) => {
     />
   );
 
-  console.log("CALLED HERE");
+  // return { circles, texts, image, boundsWidth, boundsHeight };
   return { circles, texts, image, boundsWidth, boundsHeight };
 };
