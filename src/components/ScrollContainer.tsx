@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Scrollama, Step } from "react-scrollama";
 import { ResponsiveCircleChart } from "@/components/charts/CircleChart";
-import circles2024 from "@/../public/data/grant_2024_circles.json";
 
 export const ScrollContainer = () => {
   const [currentChart, setCurrentChart] = useState("cross");
@@ -26,7 +25,7 @@ export const ScrollContainer = () => {
         className="h-[50vh] max-w-full aspect-square"
         style={{ position: "sticky", top: "15vh", border: "1px solid orchid" }}
       >
-        <ResponsiveCircleChart chartType={currentChart} data={circles2024} />
+        <ResponsiveCircleChart chartType={currentChart} />
       </div>
       <p className="text-sm md:text-4xl font-bold text-center h-[15vh] flex items-center justify-center">
         A visual story about the Swiss National Science Foundation{" "}

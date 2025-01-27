@@ -188,5 +188,6 @@ export const crossLayout = (data: any, width: number, height: number) => {
     />
   );
 
+  console.log("CALLED HERE");
   return { circles, texts, image, boundsWidth, boundsHeight };
 };

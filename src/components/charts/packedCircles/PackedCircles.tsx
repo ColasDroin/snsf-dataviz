@@ -87,7 +87,7 @@ export const packedLayout = (data: any, width: number, height: number) => {
   // Pack all the circle with D3 circle packing
   const repack = (dataToPack: any) =>
     pack().size([boundsWidth, boundsHeight]).padding(3)(
-      hierarchy({ children: dataToPack }).sum((d: any) => d.r)
+      hierarchy({ children: dataToPack }).sum((d: any) => d.amount)
     );
   // Get the packed data
   const packedData = repack(data);
