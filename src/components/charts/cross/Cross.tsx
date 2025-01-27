@@ -1,15 +1,34 @@
+// -------------------------------------------------------------------------------------------------
+// Imports
+// -------------------------------------------------------------------------------------------------
 import { useMemo, useRef } from "react";
 import { useDimensions } from "../use-dimensions";
 import { scaleLinear } from "d3-scale";
 import { extent } from "d3-array";
 import { Circle } from "@/components/charts/animation/Circle";
-
 import styles from "./Cross.module.css";
+
+// -------------------------------------------------------------------------------------------------
+// Constants
+// -------------------------------------------------------------------------------------------------
 const MARGIN = { top: 15, right: 15, bottom: 15, left: 15 };
 
+// -------------------------------------------------------------------------------------------------
+// Type definitions
+// -------------------------------------------------------------------------------------------------
 type ResponsiveCrossProps = {
   data: { id: number; cx: number; cy: number; r: number }[];
 };
+
+type CrossProps = {
+  width: number;
+  height: number;
+  data: { id: number; cx: number; cy: number; r: number }[];
+};
+
+// -------------------------------------------------------------------------------------------------
+// Components
+// -------------------------------------------------------------------------------------------------
 
 export const ResponsiveCross = (props: ResponsiveCrossProps) => {
   const chartRef = useRef(null);
@@ -23,24 +42,47 @@ export const ResponsiveCross = (props: ResponsiveCrossProps) => {
   );
 };
 
-type CrossProps = {
-  width: number;
-  height: number;
-  data: { id: number; cx: number; cy: number; r: number }[];
-};
-
 export const Cross = ({ width, height, data }: CrossProps) => {
   if (width === 0) return null;
 
+  // Get the layout data
+  const { allShapes, allTexts, image, boundsWidth, boundsHeight } = crossLayout(
+    data,
+    width,
+    height
+  );
+
+  return (
+    <div>
+      <svg width={width} height={height}>
+        <g
+          width={boundsWidth}
+          height={boundsHeight}
+          transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
+        >
+          {allShapes}
+          {allTexts}
+          {image}
+        </g>
+      </svg>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------------------------------------------
+// Functions
+// -------------------------------------------------------------------------------------------------
+export const crossLayout = (data: any, width: number, height: number) => {
   // bounds = area inside the graph axis = calculated by substracting the margins
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
+  console.log("CALLED");
+
   // Rescale the data to fit the bounds
-  const Scale = useMemo(() => {
-    const xValues = data.map((d) => d.cx);
-    return scaleLinear().domain(extent(xValues)).range([0, boundsHeight]);
-  }, [data, boundsHeight]);
+  const Scale = scaleLinear()
+    .domain(extent(data, (d) => d.cx))
+    .range([0, boundsHeight]);
 
   // Update the data with the scaled values
   const data_rescaled = data.map((d) => {
@@ -53,7 +95,7 @@ export const Cross = ({ width, height, data }: CrossProps) => {
   });
 
   // Build the shapes
-  const allShapes = data_rescaled.map((d, i) => (
+  const circles = data_rescaled.map((d, i) => (
     <Circle
       key={d.id}
       cx={d.cx}
@@ -122,7 +164,7 @@ export const Cross = ({ width, height, data }: CrossProps) => {
     // }, // Bottom right
   ];
 
-  const allTexts = text.map((pos, i) => (
+  const texts = text.map((pos, i) => (
     <text
       key={i}
       x={pos.x}
@@ -137,24 +179,14 @@ export const Cross = ({ width, height, data }: CrossProps) => {
     </text>
   ));
 
-  return (
-    <div>
-      <svg width={width} height={height}>
-        <g
-          width={boundsWidth}
-          height={boundsHeight}
-          transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
-        >
-          {allShapes}
-          {allTexts}
-          <image
-            href={"/images/logo.svg"}
-            x={(middleRight.cx + middleBottom.cx) / 2}
-            y={(middleRight.cy + middleBottom.cy) / 2.15}
-            width={boundsWidth * 0.15} // Scale the width to 10% of the bounds width
-          />
-        </g>
-      </svg>
-    </div>
+  const image = (
+    <image
+      href={"/images/logo.svg"}
+      x={(middleRight.cx + middleBottom.cx) / 2}
+      y={(middleRight.cy + middleBottom.cy) / 2.15}
+      width={boundsWidth * 0.15} // Scale the width to 10% of the bounds width
+    />
   );
+
+  return { circles, texts, image, boundsWidth, boundsHeight };
 };
