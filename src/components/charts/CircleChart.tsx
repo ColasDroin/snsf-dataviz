@@ -3,9 +3,10 @@
 // Imports
 // -------------------------------------------------------------------------------------------------
 import React, { useState, useRef, useMemo } from "react";
-import { crossLayout } from "@/components/charts/cross/Cross";
-import { packedLayout } from "@/components/charts/packedCircles/PackedCircles";
+import { crossData } from "@/components/charts/cross/Cross";
+import { packedData } from "@/components/charts/packedCircles/PackedCircles";
 import { useDimensions } from "./use-dimensions";
+import { CircleChartGSAP } from "./CircleChartGSAP";
 import circles2024 from "@/../public/data/grant_2024_circles.json";
 import data2024 from "@/../public/data/grant_2024.json";
 
@@ -22,12 +23,12 @@ type ResponsiveCircleChartProps = {
   chartType: string;
 };
 
-type LayoutData = {
+export type LayoutDataProps = {
   boundsWidth: number;
   boundsHeight: number;
-  circles: React.ReactNode;
-  texts?: React.ReactNode; // Optional
-  image?: React.ReactNode; // Optional
+  circleData: any;
+  textData?: any;
+  imageData?: any;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -54,27 +55,50 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
   if (width === 0) return null;
 
   // figure out (cx, cy, r) for each circle based on layoutType
-  const layoutDataCross: LayoutData = useMemo(() => {
-    return crossLayout(circles2024, width, height);
+  const layoutDataCross: LayoutDataProps = useMemo(() => {
+    // Get the layout data
+    return crossData(circles2024, width, height);
   }, [width, height]);
 
-  const layoutDataPacked: LayoutData = useMemo(() => {
-    return packedLayout(data2024, width, height);
+  const layoutDataPacked: LayoutDataProps = useMemo(() => {
+    return packedData(data2024, width, height);
   }, [width, height]);
 
   const layoutData = chartType === "cross" ? layoutDataCross : layoutDataPacked;
 
+  // Return the circles + text if available
   return (
-    <svg width={width} height={height}>
-      <g
-        width={layoutData.boundsWidth}
-        height={layoutData.boundsHeight}
-        //transform={`translate(${[15, 15].join(",")}`}
-      >
-        {layoutData.circles}
-        {layoutData.texts && layoutData.texts}
-        {layoutData.image && layoutData.image}
-      </g>
-    </svg>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      <CircleChartGSAP
+        boundsWidth={layoutData.boundsWidth}
+        boundsHeight={layoutData.boundsHeight}
+        circleData={layoutData.circleData}
+        textData={layoutData.textData}
+        imageData={layoutData.imageData}
+      />
+    
+    </div>
   );
+
+  // return (
+  //   <svg width={width} height={height}>
+  //     <g
+  //       width={layoutData.boundsWidth}
+  //       height={layoutData.boundsHeight}
+  //       //transform={`translate(${[15, 15].join(",")}`}
+  //     >
+  //       {layoutData.circles}
+  //       {layoutData.texts && layoutData.texts}
+  //       {layoutData.image && layoutData.image}
+  //     </g>
+  //   </svg>
+  // );
 };

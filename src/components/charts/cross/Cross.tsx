@@ -46,54 +46,11 @@ export const Cross = ({ width, height, data }: CrossProps) => {
   if (width === 0) return null;
 
   // Get the layout data
-  const { allShapes, allTexts, image, boundsWidth, boundsHeight } = crossLayout(
-    data,
-    width,
-    height
-  );
-
-  return (
-    <div>
-      <svg width={width} height={height}>
-        <g
-          width={boundsWidth}
-          height={boundsHeight}
-          transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
-        >
-          {allShapes}
-          {allTexts}
-          {image}
-        </g>
-      </svg>
-    </div>
-  );
-};
-
-// -------------------------------------------------------------------------------------------------
-// Functions
-// -------------------------------------------------------------------------------------------------
-export const crossLayout = (data: any, width: number, height: number) => {
-  // bounds = area inside the graph axis = calculated by substracting the margins
-  const boundsWidth = width - MARGIN.right - MARGIN.left;
-  const boundsHeight = height - MARGIN.top - MARGIN.bottom;
-
-  // Rescale the data to fit the bounds
-  const Scale = scaleLinear()
-    .domain(extent(data, (d) => d.cx))
-    .range([0, boundsHeight]);
-
-  // Update the data with the scaled values
-  const data_rescaled = data.map((d) => {
-    return {
-      ...d,
-      cx: Scale(d.cx),
-      cy: Scale(d.cy),
-      r: Scale(d.r),
-    };
-  });
+  const { circleData, textData, imageData, boundsWidth, boundsHeight } =
+    crossData(data, width, height);
 
   // Build the shapes
-  const circles = data_rescaled.map((d, i) => (
+  const circles = circleData.map((d, i) => (
     <Circle
       key={d.id}
       cx={d.cx}
@@ -105,13 +62,75 @@ export const crossLayout = (data: any, width: number, height: number) => {
     />
   ));
 
-  // const circles = data_rescaled;
+  const texts = textData.map((pos, i) => (
+    <text
+      key={i}
+      x={pos.x}
+      y={pos.y}
+      textAnchor={pos.anchor}
+      dominantBaseline="middle"
+      fill="white"
+      fontSize="16"
+      className={styles.text}
+    >
+      {pos.text}
+    </text>
+  ));
+
+  const image = (
+    <image
+      href={imageData.src}
+      x={imageData.x}
+      y={imageData.y}
+      width={imageData.width} // Scale the width to 10% of the bounds width
+    />
+  );
+
+  return (
+    <div>
+      <svg width={width} height={height}>
+        <g
+          width={boundsWidth}
+          height={boundsHeight}
+          transform={`translate(${[MARGIN.left, MARGIN.top].join(",")})`}
+        >
+          {circles}
+          {texts}
+          {image}
+        </g>
+      </svg>
+    </div>
+  );
+};
+
+// -------------------------------------------------------------------------------------------------
+// Functions
+// -------------------------------------------------------------------------------------------------
+export const crossData = (data: any, width: number, height: number) => {
+  // bounds = area inside the graph axis = calculated by substracting the margins
+  const boundsWidth = width - MARGIN.right - MARGIN.left;
+  const boundsHeight = height - MARGIN.top - MARGIN.bottom;
+
+  // Rescale the data to fit the bounds
+  const Scale = scaleLinear()
+    .domain(extent(data, (d) => d.cx))
+    .range([0, boundsHeight]);
+
+  // Update the data with the scaled values
+  const circleData = data.map((d) => {
+    return {
+      ...d,
+      cx: Scale(d.cx),
+      cy: Scale(d.cy),
+      r: Scale(d.r),
+    };
+  });
 
   // Get coordinates cross extremities (8 cx and cy values)
-  const topMost = data_rescaled.reduce((a, b) => (a.cy < b.cy ? a : b)); // Smallest cy
-  const bottomMost = data_rescaled.reduce((a, b) => (a.cy > b.cy ? a : b)); // Largest cy
-  const leftMost = data_rescaled.reduce((a, b) => (a.cx < b.cx ? a : b)); // Smallest cx
-  const rightMost = data_rescaled.reduce((a, b) => (a.cx > b.cx ? a : b)); // Largest cx
+  const topMost = circleData.reduce((a, b) => (a.cy < b.cy ? a : b)); // Smallest cy
+  const bottomMost = circleData.reduce((a, b) => (a.cy > b.cy ? a : b)); // Largest cy
+  const leftMost = circleData.reduce((a, b) => (a.cx < b.cx ? a : b)); // Smallest cx
+  const rightMost = circleData.reduce((a, b) => (a.cx > b.cx ? a : b)); // Largest cx
 
   // Intermediate positions
   const middleTop = { cx: (leftMost.cx + rightMost.cx) / 2, cy: topMost.cy };
@@ -138,7 +157,7 @@ export const crossLayout = (data: any, width: number, height: number) => {
   ];
 
   // Define positions for the text "SNSF" in between the arms of the cross
-  const text = [
+  const textData = [
     {
       x: (middleLeft.cx + middleTop.cx) / 2,
       y: (middleLeft.cy + middleTop.cy) / 2,
@@ -165,30 +184,12 @@ export const crossLayout = (data: any, width: number, height: number) => {
     // }, // Bottom right
   ];
 
-  const texts = text.map((pos, i) => (
-    <text
-      key={i}
-      x={pos.x}
-      y={pos.y}
-      textAnchor={pos.anchor}
-      dominantBaseline="middle"
-      fill="white"
-      fontSize="16"
-      className={styles.text}
-    >
-      {pos.text}
-    </text>
-  ));
+  let imageData = {
+    x: (middleRight.cx + middleBottom.cx) / 2,
+    y: (middleRight.cy + middleBottom.cy) / 2.15,
+    width: boundsWidth * 0.15, //
+    src: "/images/logo.svg", // HARD-CODED, not the best way...
+  };
 
-  const image = (
-    <image
-      href={"/images/logo.svg"}
-      x={(middleRight.cx + middleBottom.cx) / 2}
-      y={(middleRight.cy + middleBottom.cy) / 2.15}
-      width={boundsWidth * 0.15} // Scale the width to 10% of the bounds width
-    />
-  );
-
-  // return { circles, texts, image, boundsWidth, boundsHeight };
-  return { circles, texts, image, boundsWidth, boundsHeight };
+  return { circleData, textData, imageData, boundsWidth, boundsHeight };
 };
