@@ -30,15 +30,15 @@ export const CircleChartGSAP = ({
       x: data.cx,
       y: data.cy,
       r: data.r,
-      color: "white",
+      fill: data.fill ? data.fill : "white",
       alpha: 1,
     }));
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      circles.forEach(({ x, y, r, color, alpha }) => {
+      circles.forEach(({ x, y, r, fill, alpha }) => {
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = color;
+        ctx.fillStyle = fill;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.fill();
@@ -70,6 +70,8 @@ export const CircleChartGSAP = ({
       x: (index) => circleData[index].cx,
       y: (index) => circleData[index].cy,
       r: (index) => circleData[index].r,
+      fill: (index) =>
+        circleData[index].fill ? circleData[index].fill : "white",
       duration: 1,
       stagger: { amount: 1 },
       onUpdate: draw,

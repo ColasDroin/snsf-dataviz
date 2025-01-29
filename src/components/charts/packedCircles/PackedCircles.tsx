@@ -112,6 +112,8 @@ export const packedData = (data: any, width: number, height: number) => {
     circle.cx = circle.x;
     circle.cy = circle.y;
     circle.id = circle.data.id;
+    // add color
+    circle.fill = "#dc2626";
 
     delete circle.x;
     delete circle.y;

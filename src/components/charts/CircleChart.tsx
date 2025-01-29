@@ -84,21 +84,6 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
         textData={layoutData.textData}
         imageData={layoutData.imageData}
       />
-    
     </div>
   );
-
-  // return (
-  //   <svg width={width} height={height}>
-  //     <g
-  //       width={layoutData.boundsWidth}
-  //       height={layoutData.boundsHeight}
-  //       //transform={`translate(${[15, 15].join(",")}`}
-  //     >
-  //       {layoutData.circles}
-  //       {layoutData.texts && layoutData.texts}
-  //       {layoutData.image && layoutData.image}
-  //     </g>
-  //   </svg>
-  // );
 };
