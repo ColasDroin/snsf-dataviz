@@ -4,7 +4,10 @@
 // -------------------------------------------------------------------------------------------------
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import { crossData } from "@/components/charts/cross/Cross";
-import { packedData } from "@/components/charts/packedCircles/PackedCircles";
+import {
+  packedData,
+  multiplePackedData,
+} from "@/components/charts/packedCircles/PackedCircles";
 import { useDimensions } from "./use-dimensions";
 import { CircleChartGSAP } from "./CircleChartGSAP";
 import { BubbleLegend } from "./packedCircles/BubbleLegend";
@@ -61,10 +64,27 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
   }, [width, height]);
 
   const layoutDataPacked: LayoutDataProps = useMemo(() => {
-    return packedData(data2024, width, height);
+    return packedData(data2024, width, height, false);
   }, [width, height]);
 
-  const layoutData = chartType === "cross" ? layoutDataCross : layoutDataPacked;
+  const layoutDataPackedColored: LayoutDataProps = useMemo(() => {
+    return packedData(data2024, width, height, true);
+  }, [width, height]);
+
+  const layoutDataMultiplePacked: LayoutDataProps = useMemo(() => {
+    return multiplePackedData(data2024, width, height, true);
+  }, [width, height]);
+
+  const layoutData =
+    chartType === "cross"
+      ? layoutDataCross
+      : chartType === "packedColored"
+      ? layoutDataPackedColored
+      : chartType === "packed"
+      ? layoutDataPacked
+      : chartType === "multiplePacked"
+      ? layoutDataMultiplePacked
+      : layoutDataPacked;
 
   const [showLegend, setShowLegend] = useState(false);
 
@@ -90,7 +110,11 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
         circleData={layoutData.circleData}
         textData={layoutData.textData}
         imageData={layoutData.imageData}
-        doHover={chartType === "packed"}
+        doHover={
+          chartType === "packed" ||
+          chartType === "packedColored" ||
+          chartType === "multiplePacked"
+        }
       />
       {legend && (
         <div

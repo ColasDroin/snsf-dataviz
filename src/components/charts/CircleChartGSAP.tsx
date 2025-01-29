@@ -76,8 +76,6 @@ export const CircleChartGSAP = ({
       onUpdate: draw,
     });
 
-    setPrevCircleData(circleData);
-
     const handleMouseMove = (event) => {
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
@@ -108,6 +106,7 @@ export const CircleChartGSAP = ({
       tooltip.style.display = "none";
     });
 
+    setPrevCircleData(circleData);
     return () => {
       canvas.removeEventListener("mousemove", handleMouseMove);
     };

@@ -23,14 +23,26 @@ export const ScrollContainer = () => {
   const onStepEnter = ({ data, direction }) => {
     if (data === 1 && direction === "down") {
       setAboveStepOne(true); // Trigger gradient transition to gray
+      setCurrentChart("packed");
     }
-    setCurrentChart("packed");
+
+    if (data === 3) {
+      setCurrentChart("packedColored");
+    }
   };
 
   const onStepExit = ({ data, direction }) => {
     if (data === 1 && direction === "up") {
       setAboveStepOne(false); // Revert gradient transition to red
       setCurrentChart("cross");
+    }
+
+    if (data === 3 && direction === "up") {
+      setCurrentChart("packed");
+    }
+
+    if (data === 3 && direction === "down") {
+      setCurrentChart("multiplePacked");
     }
   };
 
@@ -97,11 +109,21 @@ export const ScrollContainer = () => {
           </Step>
 
           <Step data={2}>
-            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px] z-40">
+            <div className="w-full mt-[50vh] mb-[30vh] border-2 border-white h-[200px] z-40">
               <p className="text-xs md:text-xl">
                 Each of these circles represent one of the 2906 grants
                 attributed by the SNSF in 2024. Bigger circles represent larger
                 grants.
+              </p>
+            </div>
+          </Step>
+
+          <Step data={3}>
+            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px] z-40">
+              <p className="text-xs md:text-xl">
+                Grants can be subdivided into 5 categories: fundings for
+                projects, careers, science communication, programmes and
+                infrastuctures.
               </p>
             </div>
           </Step>

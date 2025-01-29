@@ -190,5 +190,8 @@ export const crossData = (data: any, width: number, height: number) => {
     src: "/images/logo.svg", // HARD-CODED, not the best way...
   };
 
+  // sort circleData by id to ensure the order of the circles
+  circleData.sort((a, b) => a.id - b.id);
+
   return { circleData, textData, imageData, boundsWidth, boundsHeight };
 };
