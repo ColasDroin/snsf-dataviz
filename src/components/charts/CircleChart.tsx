@@ -2,7 +2,7 @@
 // -------------------------------------------------------------------------------------------------
 // Imports
 // -------------------------------------------------------------------------------------------------
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { crossData } from "@/components/charts/cross/Cross";
 import { packedData } from "@/components/charts/packedCircles/PackedCircles";
 import { useDimensions } from "./use-dimensions";
@@ -39,11 +39,10 @@ export type LayoutDataProps = {
 
 export const ResponsiveCircleChart = (props: ResponsiveCircleChartProps) => {
   const chartRef = useRef(null);
-
   const chartSize = useDimensions(chartRef);
 
   return (
-    <div ref={chartRef} style={{ width: "100%", height: "100%" }}>
+    <div ref={chartRef} className="w-full h-full">
       <CircleChart
         height={chartSize.height}
         width={chartSize.width}
@@ -58,7 +57,6 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
 
   // figure out (cx, cy, r) for each circle based on layoutType
   const layoutDataCross: LayoutDataProps = useMemo(() => {
-    // Get the layout data
     return crossData(circles2024, width, height);
   }, [width, height]);
 
@@ -68,24 +66,24 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
 
   const layoutData = chartType === "cross" ? layoutDataCross : layoutDataPacked;
 
+  const [showLegend, setShowLegend] = useState(false);
+
+  useEffect(() => {
+    if (chartType === "packed") {
+      setTimeout(() => setShowLegend(true), 300);
+    } else {
+      setShowLegend(false);
+    }
+  }, [chartType]);
+
   // Get the legend for the circles
   const legend =
     chartType === "packed" ? (
       <BubbleLegend scale={layoutData.radiusScale} tickNumber={3} />
     ) : null;
 
-  // Return the circles + text if available
   return (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <div className="relative w-full h-full flex justify-center items-center">
       <CircleChartGSAP
         boundsWidth={layoutData.boundsWidth}
         boundsHeight={layoutData.boundsHeight}
@@ -95,13 +93,9 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
       />
       {legend && (
         <div
-          style={{
-            position: "absolute",
-            bottom: "-50px",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-          }}
+          className={`absolute -bottom-12 w-full flex justify-center transition-opacity duration-500 ${
+            showLegend ? "opacity-100" : "opacity-0"
+          }`}
         >
           {legend}
         </div>
