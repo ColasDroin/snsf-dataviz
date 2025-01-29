@@ -6,6 +6,10 @@ import { useDimensions } from "../use-dimensions";
 import { pack } from "d3-hierarchy";
 import { hierarchy } from "d3-hierarchy";
 import { Circle } from "@/components/charts/animation/Circle";
+import { scaleLinear, scaleSqrt } from "d3-scale";
+import { max, min } from "d3-array";
+import { extent } from "d3-array";
+
 //import styles from "./PackedCircles.module.css";
 
 // -------------------------------------------------------------------------------------------------
@@ -107,6 +111,20 @@ export const packedData = (data: any, width: number, height: number) => {
   // Get the circles from the packed data
   const circleData = packedData.descendants().slice(1);
 
+  // Get min and max of the data using extent
+  const [min_data, max_data] = extent(data.map((d: any) => d.amount));
+  const [min_r, max_r] = extent(circleData.map((d: any) => d.r));
+
+  console.log("min_data", min_data);
+  console.log("max_data", max_data);
+  console.log("min_r", min_r);
+  console.log("max_r", max_r);
+
+  const radiusScale = scaleSqrt()
+    .domain([min_data, max_data])
+    .range([min_r, max_r])
+    .nice();
+
   // Rename the properties to match the Circle component
   circleData.forEach((circle) => {
     circle.cx = circle.x;
@@ -123,5 +141,6 @@ export const packedData = (data: any, width: number, height: number) => {
     circleData,
     boundsWidth,
     boundsHeight,
+    radiusScale,
   };
 };

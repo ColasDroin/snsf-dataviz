@@ -50,7 +50,7 @@ export const CircleChartGSAP = ({
         ctx.font = "calc( 2vh + 0.5vmin) sans-serif";
         ctx.fillText(pos.text, pos.x, pos.y);
       });
-      // Ad image rendering here
+      // Add image rendering here
       if (imageData) {
         const img = new Image();
         img.src = imageData.src;

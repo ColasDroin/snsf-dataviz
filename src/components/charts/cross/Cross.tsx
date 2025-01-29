@@ -5,7 +5,6 @@ import { useMemo, useRef } from "react";
 import { useDimensions } from "../use-dimensions";
 import { scaleLinear } from "d3-scale";
 import { extent } from "d3-array";
-import { Circle } from "@/components/charts/animation/Circle";
 import styles from "./Cross.module.css";
 
 // -------------------------------------------------------------------------------------------------

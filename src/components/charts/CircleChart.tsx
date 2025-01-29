@@ -7,6 +7,7 @@ import { crossData } from "@/components/charts/cross/Cross";
 import { packedData } from "@/components/charts/packedCircles/PackedCircles";
 import { useDimensions } from "./use-dimensions";
 import { CircleChartGSAP } from "./CircleChartGSAP";
+import { BubbleLegend } from "./packedCircles/BubbleLegend";
 import circles2024 from "@/../public/data/grant_2024_circles.json";
 import data2024 from "@/../public/data/grant_2024.json";
 
@@ -29,6 +30,7 @@ export type LayoutDataProps = {
   circleData: any;
   textData?: any;
   imageData?: any;
+  radiusScale?: any;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -66,15 +68,22 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
 
   const layoutData = chartType === "cross" ? layoutDataCross : layoutDataPacked;
 
+  // Get the legend for the circles
+  const legend =
+    chartType === "packed" ? (
+      <BubbleLegend scale={layoutData.radiusScale} tickNumber={3} />
+    ) : null;
+
   // Return the circles + text if available
   return (
     <div
       style={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        width: "100%",
-        height: "100%",
       }}
     >
       <CircleChartGSAP
@@ -84,6 +93,19 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
         textData={layoutData.textData}
         imageData={layoutData.imageData}
       />
+      {legend && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "-50px",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          {legend}
+        </div>
+      )}
     </div>
   );
 };

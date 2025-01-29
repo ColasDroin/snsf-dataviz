@@ -24,7 +24,7 @@ export const ScrollContainer = () => {
     if (data === 1 && direction === "down") {
       setAboveStepOne(true); // Trigger gradient transition to gray
     }
-    setCurrentChart("packedCircles");
+    setCurrentChart("packed");
   };
 
   const onStepExit = ({ data, direction }) => {
@@ -74,11 +74,6 @@ export const ScrollContainer = () => {
             <div className="flex-1 aspect-square">
               <ResponsiveCircleChart chartType={currentChart} />
             </div>
-            {aboveStepOne && (
-              <div className="flex-1 h-full flex items-center  justify-self-center">
-                Test Test Test
-              </div>
-            )}
           </div>
         </div>
 
