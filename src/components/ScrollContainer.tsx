@@ -97,8 +97,8 @@ export const ScrollContainer = () => {
           </Step>
 
           <Step data={2}>
-            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px]">
-              <p>
+            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px] z-40">
+              <p className="text-xs md:text-xl">
                 Each of these circles represent one of the 2906 grants
                 attributed by the SNSF in 2024. Bigger circles represent larger
                 grants.
