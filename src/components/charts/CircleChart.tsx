@@ -72,7 +72,12 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
   }, [width, height]);
 
   const layoutDataMultiplePacked: LayoutDataProps = useMemo(() => {
-    return multiplePackedData(data2024, width, height, true);
+    return multiplePackedData(
+      layoutDataPackedColored,
+      width,
+      height,
+      layoutDataPackedColored.radiusScale
+    );
   }, [width, height]);
 
   const layoutData =

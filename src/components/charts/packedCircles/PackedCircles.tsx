@@ -163,10 +163,10 @@ export const packedData = (
 };
 
 export const multiplePackedData = (
-  data: any,
+  packedData: any,
   width: number,
   height: number,
-  colorByType: boolean
+  radiusScale: any
 ) => {
   const MARGIN = { top: 20, right: 20, bottom: 20, left: 20 };
   const boundsWidth = width - MARGIN.right - MARGIN.left;
@@ -174,7 +174,7 @@ export const multiplePackedData = (
 
   // Group data by type
   const groupedData = {};
-  data.forEach((d: any) => {
+  packedData.circleData.forEach((d: any) => {
     if (!groupedData[d.type]) groupedData[d.type] = [];
     groupedData[d.type].push(d);
   });
@@ -196,9 +196,12 @@ export const multiplePackedData = (
     const xOffset = col * clusterWidth + clusterWidth / 2;
     const yOffset = row * clusterHeight + clusterHeight / 2;
 
-    const packedCluster = pack().size([clusterWidth, clusterHeight]).padding(3)(
-      hierarchy({ children: groupedData[type] }).sum((d) => d.amount)
-    );
+    const packedCluster = pack()
+      .size([clusterWidth, clusterHeight])
+      .padding(3)
+      .radius((node) => {
+        return radiusScale(node.data.amount);
+      })(hierarchy({ children: groupedData[type] }).sum((d) => d.amount));
 
     const clusterCircles = packedCluster.descendants().slice(1);
 
@@ -209,7 +212,7 @@ export const multiplePackedData = (
       circle.title = circle.data.title;
       circle.amount = circle.data.amount;
       circle.type = circle.data.type;
-      circle.fill = colorByType ? dicColors[circle.data.type] : "#dc2626";
+      circle.fill = circle.data.fill;
       delete circle.x;
       delete circle.y;
       delete circle.data;
@@ -218,15 +221,6 @@ export const multiplePackedData = (
     circleData = circleData.concat(clusterCircles);
   });
 
-  // Get min and max for radius scale
-  const [min_data, max_data] = extent(data.map((d) => d.amount));
-  const [min_r, max_r] = extent(circleData.map((d) => d.r));
-
-  const radiusScale = scaleSqrt()
-    .domain([min_data, max_data])
-    .range([min_r, max_r])
-    .nice();
-
   // sort circleData by id to ensure the order of the circles
   circleData.sort((a, b) => a.id - b.id);
 
@@ -234,6 +228,5 @@ export const multiplePackedData = (
     circleData,
     boundsWidth,
     boundsHeight,
-    radiusScale,
   };
 };
