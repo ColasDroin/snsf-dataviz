@@ -130,6 +130,7 @@ export const packedData = (data: any, width: number, height: number) => {
     // Add text for tooltip
     circle.title = circle.data.title;
     circle.amount = circle.data.amount;
+    circle.type = circle.data.type;
 
     delete circle.x;
     delete circle.y;

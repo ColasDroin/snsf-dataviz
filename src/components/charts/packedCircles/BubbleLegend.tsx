@@ -7,7 +7,6 @@ type BubbleLegendProps = {
 
 export const BubbleLegend = ({ scale, tickNumber }: BubbleLegendProps) => {
   const ticks = scale.ticks(tickNumber);
-  console.log("ICI", ticks);
   const maxValue = ticks[ticks.length - 1];
 
   const diameter = scale(maxValue) * 2; // diameter of the biggest circle

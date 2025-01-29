@@ -8,7 +8,6 @@ import { packedData } from "@/components/charts/packedCircles/PackedCircles";
 import { useDimensions } from "./use-dimensions";
 import { CircleChartGSAP } from "./CircleChartGSAP";
 import { BubbleLegend } from "./packedCircles/BubbleLegend";
-import circles2024 from "@/../public/data/grant_2024_circles.json";
 import data2024 from "@/../public/data/grant_2024.json";
 
 // -------------------------------------------------------------------------------------------------
@@ -31,6 +30,7 @@ export type LayoutDataProps = {
   textData?: any;
   imageData?: any;
   radiusScale?: any;
+  doHover?: boolean;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
 
   // figure out (cx, cy, r) for each circle based on layoutType
   const layoutDataCross: LayoutDataProps = useMemo(() => {
-    return crossData(circles2024, width, height);
+    return crossData(data2024, width, height);
   }, [width, height]);
 
   const layoutDataPacked: LayoutDataProps = useMemo(() => {
@@ -90,6 +90,7 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
         circleData={layoutData.circleData}
         textData={layoutData.textData}
         imageData={layoutData.imageData}
+        doHover={chartType === "packed"}
       />
       {legend && (
         <div
