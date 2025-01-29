@@ -115,11 +115,6 @@ export const packedData = (data: any, width: number, height: number) => {
   const [min_data, max_data] = extent(data.map((d: any) => d.amount));
   const [min_r, max_r] = extent(circleData.map((d: any) => d.r));
 
-  console.log("min_data", min_data);
-  console.log("max_data", max_data);
-  console.log("min_r", min_r);
-  console.log("max_r", max_r);
-
   const radiusScale = scaleSqrt()
     .domain([min_data, max_data])
     .range([min_r, max_r])
@@ -132,9 +127,13 @@ export const packedData = (data: any, width: number, height: number) => {
     circle.id = circle.data.id;
     // add color
     circle.fill = "#dc2626";
+    // Add text for tooltip
+    circle.title = circle.data.title;
+    circle.amount = circle.data.amount;
 
     delete circle.x;
     delete circle.y;
+    delete circle.data;
   });
 
   return {
