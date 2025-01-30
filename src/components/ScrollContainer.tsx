@@ -6,7 +6,8 @@ import { ResponsiveCircleChart } from "@/components/charts/CircleChart";
 
 export const ScrollContainer = () => {
   const [currentChart, setCurrentChart] = useState("cross");
-  const [aboveStepOne, setAboveStepOne] = useState(false); // Tracks if we are at Step 1
+  const [aboveStepOne, setAboveStepOne] = useState(false);
+  const [aboveStepFour, setAboveStepFour] = useState(false);
 
   // React Spring: Define springs for the opacity of each gradient layer
   const redGradientSpring = useSpring({
@@ -16,6 +17,11 @@ export const ScrollContainer = () => {
 
   const grayGradientSpring = useSpring({
     opacity: aboveStepOne ? 1 : 0, // Fade in gray gradient when isStepOne is true
+    config: { duration: 1000 }, // Animation duration: 1 second
+  });
+
+  const lightGrayGradientSpring = useSpring({
+    opacity: aboveStepFour ? 1 : 0, // Fade in gray gradient when isStepFour is true
     config: { duration: 1000 }, // Animation duration: 1 second
   });
 
@@ -30,8 +36,9 @@ export const ScrollContainer = () => {
       setCurrentChart("packedColored");
     }
 
-    if (data === 4) {
+    if (data === 4 && direction === "down") {
       setCurrentChart("multiplePackedByRow");
+      setAboveStepFour(true);
     }
   };
 
@@ -47,6 +54,11 @@ export const ScrollContainer = () => {
 
     if (data === 3 && direction === "down") {
       setCurrentChart("multiplePacked");
+    }
+
+    if (data === 4 && direction === "up") {
+      setCurrentChart("multiplePacked");
+      setAboveStepFour(false);
     }
   };
 
@@ -72,6 +84,16 @@ export const ScrollContainer = () => {
           pointerEvents: "none", // Allows clicks to pass through
         }}
       />
+
+      {/* <animated.div
+        className="absolute inset-0 w-full h-full"
+        style={{
+          background:
+            "linear-gradient(to bottom,rgb(96, 108, 127),rgb(137, 148, 165))", // Light gray gradient
+          ...lightGrayGradientSpring,
+          pointerEvents: "none", // Allows clicks to pass through
+        }}
+      /> */}
 
       {/* Content Container */}
       <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-[900px]">

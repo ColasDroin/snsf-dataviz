@@ -10,6 +10,7 @@ export const CircleChartGSAP = ({
   textData = null,
   imageData = null,
   doHover = false,
+  titles = [],
 }: LayoutDataProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -49,6 +50,36 @@ export const CircleChartGSAP = ({
         ctx.textAlign = pos.anchor;
         ctx.font = "calc(2vh + 0.5vmin) sans-serif";
         ctx.fillText(pos.text, pos.x, pos.y);
+      });
+
+      titles?.forEach((t) => {
+        ctx.fillStyle = t.fill ? t.fill : "white";
+        ctx.textAlign = "center";
+        ctx.font = "calc(0.7vh + 0.15vmin) sans-serif";
+        const maxWidth = 100; // Adjust this width limit as needed
+        const words = t.field.split(" ");
+        let line = "";
+        let lines = [];
+        let testLine = "";
+
+        words.forEach((word) => {
+          testLine = line + (line ? " " : "") + word;
+          if (ctx.measureText(testLine).width > maxWidth) {
+            lines.push(line);
+            line = word;
+          } else {
+            line = testLine;
+          }
+        });
+        lines.push(line); // Add the last line
+
+        // Draw each line with proper vertical spacing
+        const lineHeight = parseFloat(ctx.font) * 1.2; // Adjust line spacing as needed
+        const startY = t.y - ((lines.length - 1) * lineHeight) / 2;
+
+        lines.forEach((l, index) => {
+          ctx.fillText(l, t.x, startY + index * lineHeight);
+        });
       });
 
       if (imageData) {

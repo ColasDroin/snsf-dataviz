@@ -7,6 +7,7 @@ import { pack } from "d3-hierarchy";
 import { hierarchy } from "d3-hierarchy";
 import { Circle } from "@/components/charts/animation/Circle";
 import { scaleLinear, scaleSqrt } from "d3-scale";
+import { interpolateSpectral } from "d3-scale-chromatic";
 import { max, min } from "d3-array";
 import { extent } from "d3-array";
 
@@ -255,7 +256,6 @@ export const multiplePackedDataByRow = (
 
   // Group data by type
   const groupedData = {};
-  console.log("CI4", data);
   data.circleData.forEach((d: any) => {
     if (!groupedData[d.field]) groupedData[d.field] = [];
     groupedData[d.field].push(d);
@@ -263,7 +263,6 @@ export const multiplePackedDataByRow = (
 
   // Compute the number of clusters
   const fields = Object.keys(groupedData);
-  console.log("LSD", fields);
   const numClusters = fields.length;
 
   // Determine cluster layout
@@ -273,11 +272,20 @@ export const multiplePackedDataByRow = (
   const clusterHeight = boundsHeight / rows;
 
   let circleData: any = [];
+  let titles: any = [];
   fields.forEach((type, index) => {
     const col = index % cols;
     const row = Math.floor(index / cols);
-    const xOffset = col * clusterWidth + clusterWidth / 2;
+    let xOffset = col * clusterWidth + clusterWidth / 2;
     const yOffset = row * clusterHeight + clusterHeight / 2;
+
+    // If it's the last row, adjust the xOffset
+    if (row === rows - 1) {
+      const numClustersInLastRow = numClusters % cols;
+      console.log("numClustersInLastRow", numClustersInLastRow);
+      xOffset =
+        (col * clusterWidth * cols) / numClustersInLastRow + clusterWidth / 1.5;
+    }
 
     const packedCluster = pack().size([clusterWidth, clusterHeight]).padding(3)(
       hierarchy({ children: groupedData[type] }).sum((d) => d.amount)
@@ -293,13 +301,21 @@ export const multiplePackedDataByRow = (
       circle.amount = circle.data.amount;
       circle.type = circle.data.type;
       circle.field = circle.data.field;
-      circle.fill = dicColors[circle.data.type];
+      circle.fill = interpolateSpectral(
+        (2 + index) / (numClusters - 1 + 2 + 3)
+      ); ///dicColors[circle.data.type];
       delete circle.x;
       delete circle.y;
       delete circle.data;
     });
 
     circleData = circleData.concat(clusterCircles);
+    titles.push({
+      field: type,
+      fill: interpolateSpectral((2 + index) / (numClusters - 1 + 2 + 3)),
+      x: xOffset,
+      y: yOffset + clusterHeight / 2,
+    });
   });
 
   // Get min and max for radius scale
@@ -319,5 +335,6 @@ export const multiplePackedDataByRow = (
     boundsWidth,
     boundsHeight,
     radiusScale,
+    titles,
   };
 };

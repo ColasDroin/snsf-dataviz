@@ -35,6 +35,7 @@ export type LayoutDataProps = {
   imageData?: any;
   radiusScale?: any;
   doHover?: boolean;
+  titles?: [];
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -123,6 +124,7 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
           chartType === "multiplePacked" ||
           chartType === "multiplePackedByRow"
         }
+        titles={chartType === "multiplePackedByRow" ? layoutData.titles : []}
       />
       {legend && (
         <div
