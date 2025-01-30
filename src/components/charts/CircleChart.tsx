@@ -36,6 +36,7 @@ export type LayoutDataProps = {
   radiusScale?: any;
   doHover?: boolean;
   titles?: [];
+  clusterData?: [];
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -90,7 +91,8 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
       ? layoutDataPacked
       : chartType === "multiplePacked"
       ? layoutDataMultiplePacked
-      : chartType === "multiplePackedByRow"
+      : chartType === "multiplePackedByRow" ||
+        chartType === "multiplePackedByRowSquared"
       ? layoutDataMultiplePackedByRow
       : layoutDataCross;
 
@@ -124,7 +126,17 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
           chartType === "multiplePacked" ||
           chartType === "multiplePackedByRow"
         }
-        titles={chartType === "multiplePackedByRow" ? layoutData.titles : []}
+        titles={
+          chartType === "multiplePackedByRow" ||
+          chartType === "multiplePackedByRowSquared"
+            ? layoutData.titles
+            : []
+        }
+        clusterData={
+          chartType === "multiplePackedByRowSquared"
+            ? layoutData.clusterData
+            : null
+        }
       />
       {legend && (
         <div

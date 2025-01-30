@@ -7,7 +7,6 @@ import { ResponsiveCircleChart } from "@/components/charts/CircleChart";
 export const ScrollContainer = () => {
   const [currentChart, setCurrentChart] = useState("cross");
   const [aboveStepOne, setAboveStepOne] = useState(false);
-  const [aboveStepFour, setAboveStepFour] = useState(false);
 
   // React Spring: Define springs for the opacity of each gradient layer
   const redGradientSpring = useSpring({
@@ -17,11 +16,6 @@ export const ScrollContainer = () => {
 
   const grayGradientSpring = useSpring({
     opacity: aboveStepOne ? 1 : 0, // Fade in gray gradient when isStepOne is true
-    config: { duration: 1000 }, // Animation duration: 1 second
-  });
-
-  const lightGrayGradientSpring = useSpring({
-    opacity: aboveStepFour ? 1 : 0, // Fade in gray gradient when isStepFour is true
     config: { duration: 1000 }, // Animation duration: 1 second
   });
 
@@ -38,7 +32,10 @@ export const ScrollContainer = () => {
 
     if (data === 4 && direction === "down") {
       setCurrentChart("multiplePackedByRow");
-      setAboveStepFour(true);
+    }
+
+    if (data === 5 && direction === "down") {
+      setCurrentChart("multiplePackedByRowSquared");
     }
   };
 
@@ -58,7 +55,10 @@ export const ScrollContainer = () => {
 
     if (data === 4 && direction === "up") {
       setCurrentChart("multiplePacked");
-      setAboveStepFour(false);
+    }
+
+    if (data === 5 && direction === "up") {
+      setCurrentChart("multiplePackedByRow");
     }
   };
 
@@ -155,10 +155,21 @@ export const ScrollContainer = () => {
           </Step>
 
           <Step data={4}>
-            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px] z-40">
+            <div className="w-full mt-[50vh] mb-[1vh] border-2 border-white h-[200px] z-40">
               <p className="text-xs md:text-xl">
                 Inside of these categories, grants can be further subdivided
                 into the scientific disciplines they fund.
+              </p>
+            </div>
+          </Step>
+
+          <Step data={5}>
+            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px] z-40">
+              <p className="text-xs md:text-xl">
+                But size can be a bit misleading as clusters were normalized to
+                all take up the same space, otherwise some disciplines would
+                barely be visible... Let's add all the grants together, for each
+                field, to see the big picture.
               </p>
             </div>
           </Step>

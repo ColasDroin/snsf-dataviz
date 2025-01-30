@@ -273,7 +273,9 @@ export const multiplePackedDataByRow = (
 
   let circleData: any = [];
   let titles: any = [];
-  fields.forEach((type, index) => {
+  let clusterData: any = [];
+  fields.forEach((field, index) => {
+    let totalAmount = 0;
     const col = index % cols;
     const row = Math.floor(index / cols);
     let xOffset = col * clusterWidth + clusterWidth / 2;
@@ -288,7 +290,7 @@ export const multiplePackedDataByRow = (
     }
 
     const packedCluster = pack().size([clusterWidth, clusterHeight]).padding(3)(
-      hierarchy({ children: groupedData[type] }).sum((d) => d.amount)
+      hierarchy({ children: groupedData[field] }).sum((d) => d.amount)
     );
 
     const clusterCircles = packedCluster.descendants().slice(1);
@@ -307,14 +309,21 @@ export const multiplePackedDataByRow = (
       delete circle.x;
       delete circle.y;
       delete circle.data;
+      totalAmount += circle.amount;
     });
 
     circleData = circleData.concat(clusterCircles);
     titles.push({
-      field: type,
+      field: field,
       fill: interpolateSpectral((2 + index) / (numClusters - 1 + 2 + 3)),
       x: xOffset,
       y: yOffset + clusterHeight / 2,
+    });
+    clusterData.push({
+      x: xOffset,
+      y: yOffset,
+      amount: totalAmount,
+      title: field,
     });
   });
 
@@ -336,5 +345,6 @@ export const multiplePackedDataByRow = (
     boundsHeight,
     radiusScale,
     titles,
+    clusterData,
   };
 };
