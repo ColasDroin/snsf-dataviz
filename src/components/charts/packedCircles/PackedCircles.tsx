@@ -162,6 +162,30 @@ export const packedData = (
   };
 };
 
+function buildHierarchy(packedData) {
+  // Group data by type
+  const groupedData = {};
+  packedData.circleData.forEach((d: any) => {
+    if (!groupedData[d.type]) groupedData[d.type] = [];
+    groupedData[d.type].push(d);
+  });
+
+  // Transform into a children array for the root
+  const clusterNodes = Object.entries(groupedData).map(([type, nodes]) => {
+    return {
+      name: type, // or any property you want
+      type, // keep the cluster type
+      children: nodes, // the data points in this cluster
+    };
+  });
+
+  // Return a single root object
+  return {
+    name: "root",
+    children: clusterNodes,
+  };
+}
+
 export const multiplePackedData = (
   packedData: any,
   width: number,
@@ -172,53 +196,39 @@ export const multiplePackedData = (
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
-  // Group data by type
-  const groupedData = {};
-  packedData.circleData.forEach((d: any) => {
-    if (!groupedData[d.type]) groupedData[d.type] = [];
-    groupedData[d.type].push(d);
-  });
+  // Build the hierarchical object
+  const rootData = buildHierarchy(packedData);
 
-  // Compute the number of clusters
-  const types = Object.keys(groupedData);
-  const numClusters = types.length;
+  // Create the d3-hierarchy root
+  const root = hierarchy(rootData)
+    .sum((d) => d.amount || 0)
+    .sort((a, b) => b.value - a.value);
 
-  // Determine cluster layout
-  const cols = Math.ceil(Math.sqrt(numClusters));
-  const rows = Math.ceil(numClusters / cols);
-  const clusterWidth = boundsWidth / cols;
-  const clusterHeight = boundsHeight / rows;
+  // Create the d3 pack layout
+  const packLayout = pack().size([boundsWidth, boundsHeight]).padding(3);
 
-  let circleData: any = [];
-  types.forEach((type, index) => {
-    const col = index % cols;
-    const row = Math.floor(index / cols);
-    const xOffset = col * clusterWidth + clusterWidth / 2;
-    const yOffset = row * clusterHeight + clusterHeight / 2;
+  // Compute the layout, which assigns x, y, r to all nodes
+  const packedRoot = packLayout(root);
 
-    const packedCluster = pack()
-      .size([clusterWidth, clusterHeight])
-      .padding(3)
-      .radius((node) => {
-        return radiusScale(node.data.amount);
-      })(hierarchy({ children: groupedData[type] }).sum((d) => d.amount));
+  // Now `packedRoot` is a hierarchy node with coordinates.
+  // We can get a flat array of all descendants:
+  const descendants = packedRoot.descendants();
 
-    const clusterCircles = packedCluster.descendants().slice(1);
+  let circleData = descendants.slice(1);
 
-    clusterCircles.forEach((circle) => {
-      circle.cx = circle.x + xOffset - clusterWidth / 2;
-      circle.cy = circle.y + yOffset - clusterHeight / 2;
-      circle.id = circle.data.id;
-      circle.title = circle.data.title;
-      circle.amount = circle.data.amount;
-      circle.type = circle.data.type;
-      circle.fill = circle.data.fill;
-      delete circle.x;
-      delete circle.y;
-      delete circle.data;
-    });
+  circleData = circleData.filter((circle) => circle.depth === 2);
 
-    circleData = circleData.concat(clusterCircles);
+  circleData.forEach((circle) => {
+    circle.cx = circle.x;
+    circle.cy = circle.y;
+    circle.id = circle.data.id;
+    circle.title = circle.data.title;
+    circle.amount = circle.data.amount;
+    circle.type = circle.data.type;
+    circle.fill = circle.data.fill;
+    delete circle.x;
+    delete circle.y;
+    delete circle.data;
   });
 
   // sort circleData by id to ensure the order of the circles

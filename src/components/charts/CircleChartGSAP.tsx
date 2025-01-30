@@ -72,7 +72,7 @@ export const CircleChartGSAP = ({
       fill: (index) =>
         circleData[index].fill ? circleData[index].fill : "white",
       duration: 1,
-      stagger: { amount: 5 },
+      stagger: { amount: 1 },
       onUpdate: draw,
     });
 
