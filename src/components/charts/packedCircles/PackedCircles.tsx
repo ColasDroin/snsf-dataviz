@@ -142,6 +142,7 @@ export const packedData = (
     circle.title = circle.data.title;
     circle.amount = circle.data.amount;
     circle.type = circle.data.type;
+    circle.field = circle.data.field;
     // add color
     if (colorByType) circle.fill = dicColors[circle.data.type];
     else circle.fill = "#dc2626";
@@ -162,12 +163,14 @@ export const packedData = (
   };
 };
 
-function buildHierarchy(packedData) {
+function buildHierarchy(packedData, field = "type") {
   // Group data by type
   const groupedData = {};
+
+  // Group data according to the field value
   packedData.circleData.forEach((d: any) => {
-    if (!groupedData[d.type]) groupedData[d.type] = [];
-    groupedData[d.type].push(d);
+    if (!groupedData[d[field]]) groupedData[d[field]] = [];
+    groupedData[d[field]].push(d);
   });
 
   // Transform into a children array for the root
@@ -189,8 +192,7 @@ function buildHierarchy(packedData) {
 export const multiplePackedData = (
   packedData: any,
   width: number,
-  height: number,
-  radiusScale: any
+  height: number
 ) => {
   const MARGIN = { top: 20, right: 20, bottom: 20, left: 20 };
   const boundsWidth = width - MARGIN.right - MARGIN.left;
@@ -225,6 +227,7 @@ export const multiplePackedData = (
     circle.title = circle.data.title;
     circle.amount = circle.data.amount;
     circle.type = circle.data.type;
+    circle.field = circle.data.field;
     circle.fill = circle.data.fill;
     delete circle.x;
     delete circle.y;
@@ -238,5 +241,83 @@ export const multiplePackedData = (
     circleData,
     boundsWidth,
     boundsHeight,
+  };
+};
+
+export const multiplePackedDataByRow = (
+  data: any,
+  width: number,
+  height: number
+) => {
+  const MARGIN = { top: 20, right: 20, bottom: 20, left: 20 };
+  const boundsWidth = width - MARGIN.right - MARGIN.left;
+  const boundsHeight = height - MARGIN.top - MARGIN.bottom;
+
+  // Group data by type
+  const groupedData = {};
+  console.log("CI4", data);
+  data.circleData.forEach((d: any) => {
+    if (!groupedData[d.field]) groupedData[d.field] = [];
+    groupedData[d.field].push(d);
+  });
+
+  // Compute the number of clusters
+  const fields = Object.keys(groupedData);
+  console.log("LSD", fields);
+  const numClusters = fields.length;
+
+  // Determine cluster layout
+  const cols = 6; //Math.ceil(Math.sqrt(numClusters));
+  const rows = Math.ceil(numClusters / cols);
+  const clusterWidth = boundsWidth / cols;
+  const clusterHeight = boundsHeight / rows;
+
+  let circleData: any = [];
+  fields.forEach((type, index) => {
+    const col = index % cols;
+    const row = Math.floor(index / cols);
+    const xOffset = col * clusterWidth + clusterWidth / 2;
+    const yOffset = row * clusterHeight + clusterHeight / 2;
+
+    const packedCluster = pack().size([clusterWidth, clusterHeight]).padding(3)(
+      hierarchy({ children: groupedData[type] }).sum((d) => d.amount)
+    );
+
+    const clusterCircles = packedCluster.descendants().slice(1);
+
+    clusterCircles.forEach((circle) => {
+      circle.cx = circle.x + xOffset - clusterWidth / 2;
+      circle.cy = circle.y + yOffset - clusterHeight / 2;
+      circle.id = circle.data.id;
+      circle.title = circle.data.title;
+      circle.amount = circle.data.amount;
+      circle.type = circle.data.type;
+      circle.field = circle.data.field;
+      circle.fill = dicColors[circle.data.type];
+      delete circle.x;
+      delete circle.y;
+      delete circle.data;
+    });
+
+    circleData = circleData.concat(clusterCircles);
+  });
+
+  // Get min and max for radius scale
+  const [min_data, max_data] = extent(circleData.map((d) => d.amount));
+  const [min_r, max_r] = extent(circleData.map((d) => d.r));
+
+  const radiusScale = scaleSqrt()
+    .domain([min_data, max_data])
+    .range([min_r, max_r])
+    .nice();
+
+  // sort circleData by id to ensure the order of the circles
+  circleData.sort((a, b) => a.id - b.id);
+
+  return {
+    circleData,
+    boundsWidth,
+    boundsHeight,
+    radiusScale,
   };
 };

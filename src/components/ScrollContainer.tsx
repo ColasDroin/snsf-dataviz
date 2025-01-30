@@ -29,6 +29,10 @@ export const ScrollContainer = () => {
     if (data === 3) {
       setCurrentChart("packedColored");
     }
+
+    if (data === 4) {
+      setCurrentChart("multiplePackedByRow");
+    }
   };
 
   const onStepExit = ({ data, direction }) => {
@@ -119,11 +123,20 @@ export const ScrollContainer = () => {
           </Step>
 
           <Step data={3}>
-            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px] z-40">
+            <div className="w-full mt-[50vh] mb-[1vh] border-2 border-white h-[200px] z-40">
               <p className="text-xs md:text-xl">
                 Grants can be subdivided into 5 categories: fundings for
                 projects, careers, science communication, programmes and
                 infrastuctures.
+              </p>
+            </div>
+          </Step>
+
+          <Step data={4}>
+            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px] z-40">
+              <p className="text-xs md:text-xl">
+                Inside of these categories, grants can be further subdivided
+                into the scientific disciplines they fund.
               </p>
             </div>
           </Step>

@@ -31,6 +31,7 @@ export const CircleChartGSAP = ({
       title: data.title ? data.title : "",
       amount: data.amount ? data.amount : "",
       type: data.type ? data.type : "",
+      field: data.field ? data.field : "",
     }));
 
     const draw = () => {
@@ -85,13 +86,13 @@ export const CircleChartGSAP = ({
       const mouseY = (event.clientY - rect.top) * scaleY;
       let hovered = false;
 
-      circles.forEach(({ x, y, r, id, title, amount, type }) => {
+      circles.forEach(({ x, y, r, id, title, amount, type, field }) => {
         const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
         if (distance < r && doHover) {
           tooltip.style.display = "block";
           tooltip.style.left = `${mouseX + 10}px`;
           tooltip.style.top = `${mouseY + 10}px`;
-          tooltip.innerHTML = `<strong>${title}</strong><br>ID: ${id}<br>Amount: CHF ${amount}<br>Type: ${type}`;
+          tooltip.innerHTML = `<strong>${title}</strong><br>Grant N°: ${id}<br>Amount: CHF ${amount}<br>Type: ${type} <br>Field: ${field}`;
           hovered = true;
         }
       });

@@ -7,6 +7,7 @@ import { crossData } from "@/components/charts/cross/Cross";
 import {
   packedData,
   multiplePackedData,
+  multiplePackedDataByRow,
 } from "@/components/charts/packedCircles/PackedCircles";
 import { useDimensions } from "./use-dimensions";
 import { CircleChartGSAP } from "./CircleChartGSAP";
@@ -72,12 +73,11 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
   }, [width, height]);
 
   const layoutDataMultiplePacked: LayoutDataProps = useMemo(() => {
-    return multiplePackedData(
-      layoutDataPackedColored,
-      width,
-      height,
-      layoutDataPackedColored.radiusScale
-    );
+    return multiplePackedData(layoutDataPackedColored, width, height);
+  }, [width, height]);
+
+  const layoutDataMultiplePackedByRow: LayoutDataProps = useMemo(() => {
+    return multiplePackedDataByRow(layoutDataMultiplePacked, width, height);
   }, [width, height]);
 
   const layoutData =
@@ -89,7 +89,9 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
       ? layoutDataPacked
       : chartType === "multiplePacked"
       ? layoutDataMultiplePacked
-      : layoutDataPacked;
+      : chartType === "multiplePackedByRow"
+      ? layoutDataMultiplePackedByRow
+      : layoutDataCross;
 
   const [showLegend, setShowLegend] = useState(false);
 
@@ -118,7 +120,8 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
         doHover={
           chartType === "packed" ||
           chartType === "packedColored" ||
-          chartType === "multiplePacked"
+          chartType === "multiplePacked" ||
+          chartType === "multiplePackedByRow"
         }
       />
       {legend && (
