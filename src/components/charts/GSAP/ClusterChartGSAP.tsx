@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
-import { LayoutDataClusterProps } from "./CircleChart";
+import { LayoutDataClusterProps } from "../CircleChart";
 
 export const ClusterChartGSAP = ({
   boundsWidth,
@@ -12,7 +12,6 @@ export const ClusterChartGSAP = ({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [prevClusterData, setPrevClusterData] = useState(clusterData);
 
-  console.log("clusterData", clusterData);
   //console.log("prevClusterData", prevClusterData);
 
   useEffect(() => {
@@ -20,8 +19,6 @@ export const ClusterChartGSAP = ({
     const ctx = canvas.getContext("2d")!;
     const tooltip = tooltipRef.current!;
     let rects = [];
-    console.log("BEING CALLED IN USEEFFECT");
-    console.log("prevClusterData", prevClusterData);
     rects = prevClusterData.map((data, i) => ({
       x: data.x,
       y: data.y,
@@ -32,8 +29,6 @@ export const ClusterChartGSAP = ({
       alpha: 1,
       field: data.title ? data.title : "",
     }));
-    console.log("RECTS", rects);
-    console.log("prevClusterData AFTER", prevClusterData);
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);

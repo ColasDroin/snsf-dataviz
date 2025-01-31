@@ -284,7 +284,6 @@ export const multiplePackedDataByRow = (
     // If it's the last row, adjust the xOffset
     if (row === rows - 1) {
       const numClustersInLastRow = numClusters % cols;
-      console.log("numClustersInLastRow", numClustersInLastRow);
       xOffset =
         (col * clusterWidth * cols) / numClustersInLastRow + clusterWidth / 1.5;
     }

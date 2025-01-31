@@ -11,8 +11,8 @@ import {
   multiplePackedDataByRowToSquare,
 } from "@/components/charts/packedCircles/PackedCircles";
 import { useDimensions } from "./use-dimensions";
-import { CircleChartGSAP } from "./CircleChartGSAP";
-import { ClusterChartGSAP } from "./ClusterChartGSAP";
+import { ChartGSAP } from "./GSAP/ChartGSAP";
+import { ClusterChartGSAP } from "./GSAP/ClusterChartGSAP";
 import { BubbleLegend } from "./packedCircles/BubbleLegend";
 import data2024 from "@/../public/data/grant_2024.json";
 
@@ -90,11 +90,9 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
     return multiplePackedDataByRow(layoutDataMultiplePacked, width, height);
   }, [width, height]);
 
-  console.log("ICI", layoutDataMultiplePackedByRow.clusterData);
   const layoutDataMultiplePackedByRowToSquare: LayoutDataProps = useMemo(() => {
     return multiplePackedDataByRowToSquare(layoutDataMultiplePackedByRow);
   }, [width, height]);
-  console.log("ICI2", layoutDataMultiplePackedByRowToSquare.clusterData);
   const layoutData =
     chartType === "cross"
       ? layoutDataCross
@@ -128,7 +126,7 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
 
   return (
     <div className="relative w-full h-full flex justify-center items-center">
-      <CircleChartGSAP
+      <ChartGSAP
         boundsWidth={layoutData.boundsWidth}
         boundsHeight={layoutData.boundsHeight}
         circleData={layoutData.circleData}
@@ -147,14 +145,14 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
             : []
         }
       />
-      {(chartType === "multiplePackedByRow" ||
+      {/* {(chartType === "multiplePackedByRow" ||
         chartType === "multiplePackedByRowSquared") && (
         <ClusterChartGSAP
           boundsWidth={layoutData.boundsWidth}
           boundsHeight={layoutData.boundsHeight}
           clusterData={layoutData.clusterData}
         />
-      )}
+      )} */}
       {legend && (
         <div
           className={`absolute -bottom-12 w-full flex justify-center transition-opacity duration-500 ${
