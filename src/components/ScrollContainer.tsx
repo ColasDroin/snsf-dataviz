@@ -60,6 +60,10 @@ export const ScrollContainer = () => {
     if (data === 5 && direction === "up") {
       setCurrentChart("multiplePackedByRow");
     }
+
+    if (data === 5 && direction === "down") {
+      setCurrentChart("barplot");
+    }
   };
 
   return (

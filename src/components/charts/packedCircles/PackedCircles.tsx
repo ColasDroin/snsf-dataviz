@@ -7,7 +7,7 @@ import { useDimensions } from "../use-dimensions";
 import { pack } from "d3-hierarchy";
 import { hierarchy } from "d3-hierarchy";
 import { Circle } from "@/components/charts/animation/Circle";
-import { scaleLinear, scaleSqrt } from "d3-scale";
+import { scaleBand, scaleLinear, scaleSqrt } from "d3-scale";
 import { interpolateSpectral } from "d3-scale-chromatic";
 import { max, min } from "d3-array";
 import { extent } from "d3-array";
@@ -381,6 +381,56 @@ export const multiplePackedDataByRowToSquare = (
   rectangleData.forEach((cluster: any) => {
     cluster.amount = cluster.amountFuture;
   });
+
+  return {
+    circleData,
+    boundsWidth,
+    boundsHeight,
+    radiusScale,
+    titles,
+    rectangleData,
+  };
+};
+
+export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
+  let {
+    circleData,
+    boundsWidth,
+    boundsHeight,
+    radiusScale,
+    titles,
+    rectangleData,
+  } = layoutDataMultiplePackedByRowToSquare;
+
+  // Create a new scale for the barplot, which will contain as many bars as there are clusters
+  const xScale = scaleBand()
+    .domain(rectangleData.map((d) => d.title))
+    .range([0, boundsWidth])
+    .padding(0.3);
+
+  // Get the max amount
+  const maxAmount = max(rectangleData.map((d) => d.amount));
+
+  // Get the bar data
+  rectangleData = rectangleData.map((d, i) => {
+    return {
+      x: xScale(d.title),
+      y: boundsHeight,
+      width: xScale.bandwidth(),
+      height: (d.amount / maxAmount) * boundsHeight,
+      fill: d.fill,
+      alpha: 1,
+      field: d.title,
+    };
+  });
+
+  // Get the titles data
+  titles = rectangleData.map((d) => ({
+    field: d.field,
+    fill: d.fill,
+    x: d.x + d.width / 2,
+    y: boundsHeight - 40,
+  }));
 
   return {
     circleData,

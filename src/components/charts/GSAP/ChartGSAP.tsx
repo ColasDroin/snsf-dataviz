@@ -12,8 +12,10 @@ import {
   buildRectangles,
   drawRectangles,
   animateRectangles,
+  animateRectanglesToBarplot,
   tooltipHandlerRectangles,
 } from "./utilsRectanlges";
+
 export const ChartGSAP = ({
   boundsWidth,
   boundsHeight,
@@ -23,6 +25,7 @@ export const ChartGSAP = ({
   doHover = false,
   titles = [],
   rectangleData = null,
+  animateToBarplot = false,
 }: LayoutDataProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -36,7 +39,15 @@ export const ChartGSAP = ({
     let circles = buildCircles(prevCircleData);
 
     const drawC = () => {
-      drawCircles(ctx, canvas, circles, textData, titles, imageData);
+      drawCircles(
+        ctx,
+        canvas,
+        circles,
+        textData,
+        titles,
+        imageData,
+        !animateToBarplot
+      );
     };
 
     let tl = gsap.timeline();
@@ -62,9 +73,13 @@ export const ChartGSAP = ({
       // This is a hack to prevent prevRectangleData from being null initially... might be problematic
       let rectangles = buildRectangles(prevRectangleData || rectangleData);
       const drawR = () => {
-        drawRectangles(ctx, canvas, rectangles);
+        drawRectangles(ctx, canvas, rectangles, animateToBarplot);
       };
-      tl = animateRectangles(tl, rectangles, rectangleData, drawR);
+      if (animateToBarplot) {
+        tl = animateRectanglesToBarplot(tl, rectangles, rectangleData, drawR);
+      } else {
+        tl = animateRectangles(tl, rectangles, rectangleData, drawR);
+      }
       const handleMouseMoveRectangles = tooltipHandlerRectangles(
         canvas,
         tooltip,

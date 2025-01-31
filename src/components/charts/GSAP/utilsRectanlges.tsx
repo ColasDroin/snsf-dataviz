@@ -45,6 +45,20 @@ export const animateRectangles = (tl, rects, rectangleData, draw) => {
   return tl;
 };
 
+export const animateRectanglesToBarplot = (tl, rects, rectangleData, draw) => {
+  tl.to(rects, {
+    x: (index) => rectangleData[index].x,
+    y: (index) => rectangleData[index].y,
+    width: (index) => rectangleData[index].width,
+    height: (index) => -rectangleData[index].height,
+    fill: (index) => rectangleData[index].fill,
+    duration: 1,
+    stagger: { amount: 1 },
+    onUpdate: draw,
+  });
+  return tl;
+};
+
 export const tooltipHandlerRectangles = (canvas, tooltip, rects) => {
   const handleMouseMove = (event) => {
     const rect = canvas.getBoundingClientRect();

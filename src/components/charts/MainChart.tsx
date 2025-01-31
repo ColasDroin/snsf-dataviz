@@ -9,6 +9,7 @@ import {
   multiplePackedData,
   multiplePackedDataByRow,
   multiplePackedDataByRowToSquare,
+  barplotData,
 } from "@/components/charts/packedCircles/PackedCircles";
 import { useDimensions } from "./use-dimensions";
 import { ChartGSAP } from "./GSAP/ChartGSAP";
@@ -38,6 +39,7 @@ export type LayoutDataProps = {
   doHover?: boolean;
   titles?: any[];
   rectangleData?: any[] | null;
+  animateToBarplot?: boolean;
 };
 
 export type LayoutDataClusterProps = {
@@ -88,6 +90,11 @@ export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
   const layoutDataMultiplePackedByRowToSquare: LayoutDataProps = useMemo(() => {
     return multiplePackedDataByRowToSquare(layoutDataMultiplePackedByRow);
   }, [width, height]);
+
+  const layoutDataBarplot: LayoutDataProps = useMemo(() => {
+    return barplotData(layoutDataMultiplePackedByRowToSquare);
+  }, [width, height]);
+
   const layoutData =
     chartType === "cross"
       ? layoutDataCross
@@ -101,6 +108,8 @@ export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
       ? layoutDataMultiplePackedByRow
       : chartType === "multiplePackedByRowSquared"
       ? layoutDataMultiplePackedByRowToSquare
+      : chartType === "barplot"
+      ? layoutDataBarplot
       : layoutDataCross;
 
   const [showLegend, setShowLegend] = useState(false);
@@ -136,16 +145,19 @@ export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
         }
         titles={
           chartType === "multiplePackedByRow" ||
-          chartType === "multiplePackedByRowSquared"
+          chartType === "multiplePackedByRowSquared" ||
+          chartType === "barplot"
             ? layoutData.titles
             : []
         }
         rectangleData={
           chartType === "multiplePackedByRow" ||
-          chartType === "multiplePackedByRowSquared"
+          chartType === "multiplePackedByRowSquared" ||
+          chartType === "barplot"
             ? layoutData.rectangleData
             : null
         }
+        animateToBarplot={chartType === "barplot"}
       />
 
       {legend && (

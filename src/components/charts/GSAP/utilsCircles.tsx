@@ -24,9 +24,12 @@ export const drawCircles = (
   circles,
   textData,
   titles,
-  imageData
+  imageData,
+  clean = true
 ) => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (clean) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
   circles.forEach(({ x, y, r, fill, alpha }) => {
     ctx.globalAlpha = alpha;
     ctx.fillStyle = fill;
