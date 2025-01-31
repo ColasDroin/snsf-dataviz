@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
-import { LayoutDataProps } from "../CircleChart";
+import { LayoutDataProps } from "../MainChart";
 
 export const buildCircles = (circleData) => {
   return circleData.map((data, i) => ({
@@ -80,8 +80,7 @@ export const drawCircles = (
   }
 };
 
-export const animateCircles = (circles, circleData, draw) => {
-  let tl = gsap.timeline();
+export const animateCircles = (tl, circles, circleData, draw) => {
   tl.to(circles, {
     x: (index) => circleData[index].cx,
     y: (index) => circleData[index].cy,
@@ -95,7 +94,7 @@ export const animateCircles = (circles, circleData, draw) => {
   return tl;
 };
 
-export const tooltipHandler = (canvas, tooltip, circles) => {
+export const tooltipHandlerCircles = (canvas, tooltip, circles) => {
   const handleMouseMove = (event) => {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;

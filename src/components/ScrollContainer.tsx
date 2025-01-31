@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useSpring, animated } from "@react-spring/web";
 import { Scrollama, Step } from "react-scrollama";
-import { ResponsiveCircleChart } from "@/components/charts/CircleChart";
+import { ResponsiveMainChart } from "@/components/charts/MainChart";
 
 export const ScrollContainer = () => {
   const [currentChart, setCurrentChart] = useState("cross");
@@ -110,7 +110,7 @@ export const ScrollContainer = () => {
         >
           <div className="flex h-[50vh] max-w-full z-1">
             <div className="flex-1 aspect-square">
-              <ResponsiveCircleChart chartType={currentChart} />
+              <ResponsiveMainChart chartType={currentChart} />
             </div>
           </div>
         </div>

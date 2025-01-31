@@ -1,93 +1,43 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
-import { LayoutDataProps } from "../CircleChart";
+import { LayoutDataProps } from "../MainChart";
 
-export const buildRectangles = (rectanglesData) => {
-  return circleData.map((data, i) => ({
-    x: data.cx,
-    y: data.cy,
-    r: data.r,
+export const buildRectangles = (rectangleData) => {
+  return rectangleData.map((data, i) => ({
+    x: data.x - Math.sqrt(data.amount / 100000) / 2,
+    y: data.y,
+    amount: data.amount,
+    width: Math.sqrt(data.amount / 100000),
+    height: Math.sqrt(data.amount / 100000),
     fill: data.fill ? data.fill : "white",
     alpha: 1,
-    id: data.id,
-    title: data.title ? data.title : "",
-    amount: data.amount ? data.amount : "",
-    type: data.type ? data.type : "",
-    field: data.field ? data.field : "",
+    field: data.title ? data.title : "",
   }));
 };
 
-export const drawCircles = (
-  ctx,
-  canvas,
-  circles,
-  textData,
-  titles,
-  imageData
-) => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  circles.forEach(({ x, y, r, fill, alpha }) => {
+export const drawRectangles = (ctx, canvas, rects, clear = false) => {
+  if (clear) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  rects.forEach(({ x, y, width, height, amount, fill, alpha }) => {
     ctx.globalAlpha = alpha;
     ctx.fillStyle = fill;
     ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.rect(x, y, width, height);
     ctx.fill();
   });
-
-  textData?.forEach((pos) => {
-    ctx.fillStyle = "white";
-    ctx.textAlign = pos.anchor;
-    ctx.font = "calc(2vh + 0.5vmin) sans-serif";
-    ctx.fillText(pos.text, pos.x, pos.y);
-  });
-
-  titles?.forEach((t) => {
-    ctx.fillStyle = t.fill ? t.fill : "white";
-    ctx.textAlign = "center";
-    ctx.font = "calc(0.7vh + 0.15vmin) sans-serif";
-    const maxWidth = 100; // Adjust this width limit as needed
-    const words = t.field.split(" ");
-    let line = "";
-    let lines = [];
-    let testLine = "";
-
-    words.forEach((word) => {
-      testLine = line + (line ? " " : "") + word;
-      if (ctx.measureText(testLine).width > maxWidth) {
-        lines.push(line);
-        line = word;
-      } else {
-        line = testLine;
-      }
-    });
-    lines.push(line); // Add the last line
-
-    // Draw each line with proper vertical spacing
-    const lineHeight = parseFloat(ctx.font) * 1.2; // Adjust line spacing as needed
-    const startY = t.y - ((lines.length - 1) * lineHeight) / 2;
-
-    lines.forEach((l, index) => {
-      ctx.fillText(l, t.x, startY + index * lineHeight);
-    });
-  });
-
-  if (imageData) {
-    const img = new Image();
-    img.src = imageData.src;
-    const imgHeight = imageData.width * (img.height / img.width);
-    ctx.drawImage(img, imageData.x, imageData.y, imageData.width, imgHeight);
-  }
 };
 
-export const animateCircles = (circles, circleData, draw) => {
-  let tl = gsap.timeline();
-  tl.to(circles, {
-    x: (index) => circleData[index].cx,
-    y: (index) => circleData[index].cy,
-    r: (index) => circleData[index].r,
-    fill: (index) =>
-      circleData[index].fill ? circleData[index].fill : "white",
+export const animateRectangles = (tl, rects, rectangleData, draw) => {
+  tl.to(rects, {
+    x: (index) =>
+      rectangleData[index].x -
+      Math.sqrt(rectangleData[index].amount / 100000) / 2,
+    y: (index) => rectangleData[index].y,
+    width: (index) => Math.sqrt(rectangleData[index].amount / 100000),
+    height: (index) => Math.sqrt(rectangleData[index].amount / 100000),
+    fill: (index) => rectangleData[index].fill,
     duration: 1,
     stagger: { amount: 1 },
     onUpdate: draw,
@@ -95,7 +45,7 @@ export const animateCircles = (circles, circleData, draw) => {
   return tl;
 };
 
-export const tooltipHandler = (canvas, tooltip, circles) => {
+export const tooltipHandlerRectangles = (canvas, tooltip, rects) => {
   const handleMouseMove = (event) => {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -105,9 +55,9 @@ export const tooltipHandler = (canvas, tooltip, circles) => {
     const mouseY = (event.clientY - rect.top) * scaleY;
     let hovered = false;
 
-    circles.forEach(({ x, y, r, id, title, amount, type, field }) => {
+    rects.forEach(({ x, y, r, id, title, amount, type, field }) => {
       const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
-      if (distance < r) {
+      if (true) {
         tooltip.style.display = "block";
         tooltip.style.left = `${mouseX + 10}px`;
         tooltip.style.top = `${mouseY + 10}px`;

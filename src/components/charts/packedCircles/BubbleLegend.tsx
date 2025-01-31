@@ -1,3 +1,5 @@
+"use client";
+
 import { scaleLinear } from "d3-scale";
 
 type BubbleLegendProps = {

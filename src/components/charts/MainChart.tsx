@@ -12,7 +12,6 @@ import {
 } from "@/components/charts/packedCircles/PackedCircles";
 import { useDimensions } from "./use-dimensions";
 import { ChartGSAP } from "./GSAP/ChartGSAP";
-import { ClusterChartGSAP } from "./GSAP/ClusterChartGSAP";
 import { BubbleLegend } from "./packedCircles/BubbleLegend";
 import data2024 from "@/../public/data/grant_2024.json";
 
@@ -37,8 +36,8 @@ export type LayoutDataProps = {
   imageData?: any;
   radiusScale?: any;
   doHover?: boolean;
-  titles?: [];
-  clusterData?: [];
+  titles?: any[];
+  rectangleData?: any[] | null;
 };
 
 export type LayoutDataClusterProps = {
@@ -51,22 +50,18 @@ export type LayoutDataClusterProps = {
 // Components
 // -------------------------------------------------------------------------------------------------
 
-export const ResponsiveCircleChart = (props: ResponsiveCircleChartProps) => {
+export const ResponsiveMainChart = (props: ResponsiveCircleChartProps) => {
   const chartRef = useRef(null);
   const chartSize = useDimensions(chartRef);
 
   return (
     <div ref={chartRef} className="w-full h-full">
-      <CircleChart
-        height={chartSize.height}
-        width={chartSize.width}
-        {...props}
-      />
+      <MainChart height={chartSize.height} width={chartSize.width} {...props} />
     </div>
   );
 };
 
-export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
+export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
   if (width === 0) return null;
 
   // figure out (cx, cy, r) for each circle based on layoutType
@@ -136,7 +131,8 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
           chartType === "packed" ||
           chartType === "packedColored" ||
           chartType === "multiplePacked" ||
-          chartType === "multiplePackedByRow"
+          chartType === "multiplePackedByRow" ||
+          chartType === "multiplePackedByRowSquared"
         }
         titles={
           chartType === "multiplePackedByRow" ||
@@ -144,15 +140,14 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
             ? layoutData.titles
             : []
         }
+        rectangleData={
+          chartType === "multiplePackedByRow" ||
+          chartType === "multiplePackedByRowSquared"
+            ? layoutData.rectangleData
+            : null
+        }
       />
-      {/* {(chartType === "multiplePackedByRow" ||
-        chartType === "multiplePackedByRowSquared") && (
-        <ClusterChartGSAP
-          boundsWidth={layoutData.boundsWidth}
-          boundsHeight={layoutData.boundsHeight}
-          clusterData={layoutData.clusterData}
-        />
-      )} */}
+
       {legend && (
         <div
           className={`absolute -bottom-12 w-full flex justify-center transition-opacity duration-500 ${

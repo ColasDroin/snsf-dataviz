@@ -1,3 +1,4 @@
+"use client";
 // -------------------------------------------------------------------------------------------------
 // Imports
 // -------------------------------------------------------------------------------------------------
@@ -324,6 +325,7 @@ export const multiplePackedDataByRow = (
       amountFuture: totalAmount,
       amount: 0,
       title: field,
+      fill: interpolateSpectral((2 + index) / (numClusters - 1 + 2 + 3)),
     });
   });
 
@@ -339,13 +341,16 @@ export const multiplePackedDataByRow = (
   // sort circleData by id to ensure the order of the circles
   circleData.sort((a, b) => a.id - b.id);
 
+  // Rename clusterData to rectangleData
+  const rectangleData = clusterData.map((d) => ({ ...d }));
+
   return {
     circleData,
     boundsWidth,
     boundsHeight,
     radiusScale,
     titles,
-    clusterData,
+    rectangleData,
   };
 };
 
@@ -358,7 +363,7 @@ export const multiplePackedDataByRowToSquare = (
     boundsHeight,
     radiusScale,
     titles,
-    clusterData,
+    rectangleData,
   } = layoutDataMultiplePackedByRow;
 
   // Make a copy of the circleData
@@ -370,10 +375,10 @@ export const multiplePackedDataByRowToSquare = (
   });
 
   // Make a copy of the clusterData
-  clusterData = clusterData.map((d) => ({ ...d }));
+  rectangleData = rectangleData.map((d) => ({ ...d }));
 
   // Replace amount with amountFuture
-  clusterData.forEach((cluster: any) => {
+  rectangleData.forEach((cluster: any) => {
     cluster.amount = cluster.amountFuture;
   });
 
@@ -383,6 +388,6 @@ export const multiplePackedDataByRowToSquare = (
     boundsHeight,
     radiusScale,
     titles,
-    clusterData,
+    rectangleData,
   };
 };
