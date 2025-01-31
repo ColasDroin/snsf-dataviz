@@ -30,32 +30,38 @@ export const drawRectangles = (ctx, canvas, rects, clear = false) => {
 };
 
 export const animateRectangles = (tl, rects, rectangleData, draw) => {
-  tl.to(rects, {
-    x: (index) =>
-      rectangleData[index].x -
-      Math.sqrt(rectangleData[index].amount / 100000) / 2,
-    y: (index) => rectangleData[index].y,
-    width: (index) => Math.sqrt(rectangleData[index].amount / 100000),
-    height: (index) => Math.sqrt(rectangleData[index].amount / 100000),
-    fill: (index) => rectangleData[index].fill,
-    duration: 1,
-    stagger: { amount: 1 },
-    onUpdate: draw,
-  });
+  tl.add(
+    gsap.to(rects, {
+      x: (index) =>
+        rectangleData[index].x -
+        Math.sqrt(rectangleData[index].amount / 100000) / 2,
+      y: (index) => rectangleData[index].y,
+      width: (index) => Math.sqrt(rectangleData[index].amount / 100000),
+      height: (index) => Math.sqrt(rectangleData[index].amount / 100000),
+      fill: (index) => rectangleData[index].fill,
+      duration: 1,
+      stagger: { amount: 1 },
+      onUpdate: draw,
+    }),
+    "<"
+  );
   return tl;
 };
 
 export const animateRectanglesToBarplot = (tl, rects, rectangleData, draw) => {
-  tl.to(rects, {
-    x: (index) => rectangleData[index].x,
-    y: (index) => rectangleData[index].y,
-    width: (index) => rectangleData[index].width,
-    height: (index) => -rectangleData[index].height,
-    fill: (index) => rectangleData[index].fill,
-    duration: 1,
-    stagger: { amount: 1 },
-    onUpdate: draw,
-  });
+  tl.add(
+    gsap.to(rects, {
+      x: (index) => rectangleData[index].x,
+      y: (index) => rectangleData[index].y,
+      width: (index) => rectangleData[index].width,
+      height: (index) => -rectangleData[index].height,
+      fill: (index) => rectangleData[index].fill,
+      duration: 1,
+      stagger: { amount: 1 },
+      onUpdate: draw,
+    }),
+    "<"
+  );
   return tl;
 };
 

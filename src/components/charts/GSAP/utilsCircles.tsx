@@ -84,16 +84,18 @@ export const drawCircles = (
 };
 
 export const animateCircles = (tl, circles, circleData, draw) => {
-  tl.to(circles, {
-    x: (index) => circleData[index].cx,
-    y: (index) => circleData[index].cy,
-    r: (index) => circleData[index].r,
-    fill: (index) =>
-      circleData[index].fill ? circleData[index].fill : "white",
-    duration: 1,
-    stagger: { amount: 1 },
-    onUpdate: draw,
-  });
+  tl.add(
+    gsap.to(circles, {
+      x: (index) => circleData[index].cx,
+      y: (index) => circleData[index].cy,
+      r: (index) => circleData[index].r,
+      fill: (index) =>
+        circleData[index].fill ? circleData[index].fill : "white",
+      duration: 1,
+      stagger: { amount: 1 },
+      onUpdate: draw,
+    })
+  );
   return tl;
 };
 
