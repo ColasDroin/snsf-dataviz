@@ -322,7 +322,8 @@ export const multiplePackedDataByRow = (
     clusterData.push({
       x: xOffset,
       y: yOffset,
-      amount: totalAmount,
+      amountFuture: totalAmount,
+      amount: 0,
       title: field,
     });
   });
@@ -338,6 +339,44 @@ export const multiplePackedDataByRow = (
 
   // sort circleData by id to ensure the order of the circles
   circleData.sort((a, b) => a.id - b.id);
+
+  return {
+    circleData,
+    boundsWidth,
+    boundsHeight,
+    radiusScale,
+    titles,
+    clusterData,
+  };
+};
+
+export const multiplePackedDataByRowToSquare = (
+  layoutDataMultiplePackedByRow: any
+) => {
+  let {
+    circleData,
+    boundsWidth,
+    boundsHeight,
+    radiusScale,
+    titles,
+    clusterData,
+  } = layoutDataMultiplePackedByRow;
+
+  // Make a copy of the circleData
+  circleData = circleData.map((d) => ({ ...d }));
+
+  // Set all circles to radius 0
+  circleData.forEach((circle: any) => {
+    circle.r = 0;
+  });
+
+  // Make a copy of the clusterData
+  clusterData = clusterData.map((d) => ({ ...d }));
+
+  // Replace amount with amountFuture
+  clusterData.forEach((cluster: any) => {
+    cluster.amount = cluster.amountFuture;
+  });
 
   return {
     circleData,

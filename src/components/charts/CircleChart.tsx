@@ -8,9 +8,11 @@ import {
   packedData,
   multiplePackedData,
   multiplePackedDataByRow,
+  multiplePackedDataByRowToSquare,
 } from "@/components/charts/packedCircles/PackedCircles";
 import { useDimensions } from "./use-dimensions";
 import { CircleChartGSAP } from "./CircleChartGSAP";
+import { ClusterChartGSAP } from "./ClusterChartGSAP";
 import { BubbleLegend } from "./packedCircles/BubbleLegend";
 import data2024 from "@/../public/data/grant_2024.json";
 
@@ -37,6 +39,12 @@ export type LayoutDataProps = {
   doHover?: boolean;
   titles?: [];
   clusterData?: [];
+};
+
+export type LayoutDataClusterProps = {
+  boundsWidth: number;
+  boundsHeight: number;
+  clusterData: any;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -82,6 +90,11 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
     return multiplePackedDataByRow(layoutDataMultiplePacked, width, height);
   }, [width, height]);
 
+  console.log("ICI", layoutDataMultiplePackedByRow.clusterData);
+  const layoutDataMultiplePackedByRowToSquare: LayoutDataProps = useMemo(() => {
+    return multiplePackedDataByRowToSquare(layoutDataMultiplePackedByRow);
+  }, [width, height]);
+  console.log("ICI2", layoutDataMultiplePackedByRowToSquare.clusterData);
   const layoutData =
     chartType === "cross"
       ? layoutDataCross
@@ -91,9 +104,10 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
       ? layoutDataPacked
       : chartType === "multiplePacked"
       ? layoutDataMultiplePacked
-      : chartType === "multiplePackedByRow" ||
-        chartType === "multiplePackedByRowSquared"
+      : chartType === "multiplePackedByRow"
       ? layoutDataMultiplePackedByRow
+      : chartType === "multiplePackedByRowSquared"
+      ? layoutDataMultiplePackedByRowToSquare
       : layoutDataCross;
 
   const [showLegend, setShowLegend] = useState(false);
@@ -132,12 +146,15 @@ export const CircleChart = ({ chartType, width, height }: CircleChartProps) => {
             ? layoutData.titles
             : []
         }
-        clusterData={
-          chartType === "multiplePackedByRowSquared"
-            ? layoutData.clusterData
-            : null
-        }
       />
+      {(chartType === "multiplePackedByRow" ||
+        chartType === "multiplePackedByRowSquared") && (
+        <ClusterChartGSAP
+          boundsWidth={layoutData.boundsWidth}
+          boundsHeight={layoutData.boundsHeight}
+          clusterData={layoutData.clusterData}
+        />
+      )}
       {legend && (
         <div
           className={`absolute -bottom-12 w-full flex justify-center transition-opacity duration-500 ${

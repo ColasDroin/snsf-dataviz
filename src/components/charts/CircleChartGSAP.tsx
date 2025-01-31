@@ -11,13 +11,10 @@ export const CircleChartGSAP = ({
   imageData = null,
   doHover = false,
   titles = [],
-  clusterData = [],
 }: LayoutDataProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [prevCircleData, setPrevCircleData] = useState(circleData);
-
-  console.log("clusterDataaaaaaa", clusterData);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -100,31 +97,16 @@ export const CircleChartGSAP = ({
     };
 
     let tl = gsap.timeline();
-    console.log("Cluster data length", clusterData.length);
-    if (clusterData.length === 0) {
-      tl.to(circles, {
-        x: (index) => circleData[index].cx,
-        y: (index) => circleData[index].cy,
-        r: (index) => circleData[index].r,
-        fill: (index) =>
-          circleData[index].fill ? circleData[index].fill : "white",
-        duration: 1,
-        stagger: { amount: 1 },
-        onUpdate: draw,
-      });
-    } else {
-      console.log("Cluster data", clusterData);
-      tl.to(circles, {
-        x: (index) => circleData[index].cx,
-        y: (index) => circleData[index].cy,
-        r: (index) => 0,
-        fill: (index) =>
-          circleData[index].fill ? circleData[index].fill : "white",
-        duration: 1,
-        stagger: { amount: 1 },
-        onUpdate: draw,
-      });
-    }
+    tl.to(circles, {
+      x: (index) => circleData[index].cx,
+      y: (index) => circleData[index].cy,
+      r: (index) => circleData[index].r,
+      fill: (index) =>
+        circleData[index].fill ? circleData[index].fill : "white",
+      duration: 1,
+      stagger: { amount: 1 },
+      onUpdate: draw,
+    });
 
     const handleMouseMove = (event) => {
       const rect = canvas.getBoundingClientRect();
@@ -160,7 +142,7 @@ export const CircleChartGSAP = ({
     return () => {
       canvas.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [circleData, clusterData]);
+  }, [circleData]);
 
   return (
     <div style={{ position: "relative" }}>
