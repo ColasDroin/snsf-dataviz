@@ -210,7 +210,8 @@ export const ScrollContainer = () => {
             <div className="w-full mt-[50vh] mb-[-200px] border-2 border-white h-[200px] z-40">
               <p className="text-xs md:text-xl">
                 Finally, let's visualize how the grants are distributed across
-                the country, depending on the discipline.
+                the country, depending on the discipline. Out of the 2906
+                grants, 2466 were attributed to Swiss institutes.
               </p>
             </div>
           </Step>
@@ -222,7 +223,7 @@ export const ScrollContainer = () => {
           border: "1px solid red",
         }}
       >
-        <ResponsiveSwissChart geoData={switzerland} />
+        {/* <ResponsiveSwissChart geoData={switzerland} /> */}
       </div>
     </div>
   );
