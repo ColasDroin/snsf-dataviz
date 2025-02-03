@@ -14,7 +14,7 @@ export const buildTitles = (titleData) => {
   }));
 };
 
-export const drawTitles = (ctx, canvas, titles) => {
+export const drawTitles = (ctx, canvas, titles, split = true) => {
   // ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   titles.forEach((t) => {
@@ -22,30 +22,41 @@ export const drawTitles = (ctx, canvas, titles) => {
     ctx.textAlign = t.textAlign;
     ctx.font = t.font;
 
-    const maxWidth = 100; // Adjust this width limit as needed
-    const words = t.field.split(" ");
-    let line = "";
-    let lines = [];
-    let testLine = "";
+    if (split) {
+      const maxWidth = 100; // Adjust this width limit as needed
+      const words = t.field.split(" ");
+      let line = "";
+      let lines = [];
+      let testLine = "";
 
-    words.forEach((word) => {
-      testLine = line + (line ? " " : "") + word;
-      if (ctx.measureText(testLine).width > maxWidth) {
-        lines.push(line);
-        line = word;
-      } else {
-        line = testLine;
-      }
-    });
-    lines.push(line); // Add the last line
+      words.forEach((word) => {
+        testLine = line + (line ? " " : "") + word;
+        if (ctx.measureText(testLine).width > maxWidth) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = testLine;
+        }
+      });
+      lines.push(line); // Add the last line
 
-    // Draw each line with proper vertical spacing
-    const lineHeight = parseFloat(ctx.font) * 1.2; // Adjust line spacing as needed
-    const startY = t.y - ((lines.length - 1) * lineHeight) / 2;
+      // Draw each line with proper vertical spacing
+      const lineHeight = parseFloat(ctx.font) * 1.2; // Adjust line spacing as needed
+      const startY = t.y - ((lines.length - 1) * lineHeight) / 2;
 
-    lines.forEach((l, index) => {
-      ctx.fillText(l, t.x, startY + index * lineHeight);
-    });
+      lines.forEach((l, index) => {
+        ctx.fillText(l, t.x, startY + index * lineHeight);
+      });
+    } else {
+      ctx.save();
+      ctx.translate(t.x, t.y);
+      ctx.rotate(-Math.PI / 2.1);
+
+      ctx.textAlign = "right";
+      ctx.fillText(t.field, 0, 0);
+
+      ctx.restore();
+    }
   });
 };
 

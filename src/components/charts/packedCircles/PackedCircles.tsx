@@ -428,9 +428,9 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
   rectangleData = rectangleData.map((d, i) => {
     return {
       x: xScale(d.title),
-      y: boundsHeight,
+      y: (boundsHeight * 2) / 3,
       width: xScale.bandwidth(),
-      height: -(d.amount / maxAmount) * boundsHeight,
+      height: (-(d.amount / maxAmount) * boundsHeight * 2) / 3,
       fill: d.fill,
       alpha: 1,
       field: d.title,
@@ -442,7 +442,7 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
     field: d.field,
     fill: d.fill,
     x: d.x + d.width / 2,
-    y: boundsHeight - 40,
+    y: (boundsHeight * 2) / 3 + 20,
   }));
 
   return {

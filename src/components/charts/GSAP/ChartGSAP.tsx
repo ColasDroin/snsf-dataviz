@@ -13,7 +13,7 @@ import {
   drawRectangles,
   animateRectangles,
   tooltipHandlerRectangles,
-} from "./utilsRectanlges";
+} from "./utilsRectangles";
 import { buildTitles, drawTitles, animateTitles } from "./utilsTitles";
 
 export const ChartGSAP = ({
@@ -62,7 +62,7 @@ export const ChartGSAP = ({
     if (titleData != null) {
       let titles = buildTitles(prevTitleData || titleData);
       const drawT = () => {
-        drawTitles(ctx, canvas, titles);
+        drawTitles(ctx, canvas, titles, !animateToBarplot);
       };
       tl = animateTitles(tl, titles, titleData, drawT);
     }
