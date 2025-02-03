@@ -52,11 +52,11 @@ export const animateRectangles = (
     tl.add(
       gsap.to(axisAnimation, {
         progress: 1,
-        duration: 1,
+        duration: 2,
         ease: "power1.out",
         onUpdate: drawAxis,
-      })
-      //"<"
+      }),
+      "<"
     );
   }
   return tl;
@@ -96,6 +96,7 @@ export const drawLeftAxis = (ctx, canvas, yScale, xScale, progress = 1) => {
   const range = yScale.range();
   const rangeX = xScale.range();
   const fullHeight = range[1] - range[0];
+  const fullWidth = rangeX[1] - rangeX[0];
 
   // Save current styles
   ctx.strokeStyle = "white";
@@ -105,33 +106,43 @@ export const drawLeftAxis = (ctx, canvas, yScale, xScale, progress = 1) => {
   ctx.textBaseline = "middle";
 
   // Animate vertical axis line drawing using dash offset
-  const lineLength = fullHeight;
+  const lineLengthY = fullHeight;
   ctx.save();
-  ctx.setLineDash([lineLength]);
-  // Here, we animate the dash offset from full length to 0
-  ctx.lineDashOffset = lineLength * (1 - progress);
+  ctx.setLineDash([lineLengthY]);
+  ctx.lineDashOffset = lineLengthY * (1 - progress);
   ctx.beginPath();
   ctx.moveTo(rangeX[0], range[1]);
   ctx.lineTo(rangeX[0], range[0]);
   ctx.stroke();
   ctx.restore();
 
-  // Only draw ticks and labels when the line is fully drawn
+  // Animate horizontal axis line drawing using dash offset
+  const lineLengthX = fullWidth;
+  ctx.save();
+  ctx.setLineDash([lineLengthX]);
+  ctx.lineDashOffset = lineLengthX * (1 - progress);
+  ctx.beginPath();
+  ctx.moveTo(rangeX[0], range[1]);
+  ctx.lineTo(rangeX[1], range[1]);
+  ctx.stroke();
+  ctx.restore();
+
+  // Only draw ticks and labels when the lines are fully drawn
   if (progress === 1) {
-    // Draw ticks and labels for the vertical axis
+    // Draw vertical axis ticks and labels
     const pixelsPerTick = 70;
     const numberOfTicksTarget = Math.floor(fullHeight / pixelsPerTick);
     const ticks = yScale.ticks(numberOfTicksTarget);
 
     ticks.forEach((value) => {
       const y = yScale(value);
-      // Draw tick mark
+      // Draw vertical tick mark
       ctx.beginPath();
       ctx.moveTo(rangeX[0], range[1] - y);
       ctx.lineTo(rangeX[0] - tickLength, range[1] - y);
       ctx.stroke();
 
-      // Draw label
+      // Draw vertical label
       ctx.fillText(
         (value / 1000000).toString() + "M",
         rangeX[0] - tickLength - 5,
@@ -147,19 +158,17 @@ export const drawLeftAxis = (ctx, canvas, yScale, xScale, progress = 1) => {
     ctx.fillText("Amount in CHF", 0, 0);
     ctx.restore();
 
-    // Draw x-axis line
-    ctx.beginPath();
-    ctx.moveTo(rangeX[0], range[1]);
-    ctx.lineTo(rangeX[1], range[1]);
-    ctx.stroke();
-
-    // Draw ticks for x-axis (assuming scaleBand)
+    // Draw horizontal axis ticks
     xScale.domain().forEach((value, i) => {
       const x = xScale(value) + xScale.bandwidth() / 2;
-      ctx.beginPath();
-      ctx.moveTo(x, range[1]);
-      ctx.lineTo(x, range[1] + tickLength);
-      ctx.stroke();
+
+      // Only draw horizontal tick marks when progress reaches 1
+      if (progress === 1) {
+        ctx.beginPath();
+        ctx.moveTo(x, range[1]);
+        ctx.lineTo(x, range[1] + tickLength);
+        ctx.stroke();
+      }
     });
   }
 };
