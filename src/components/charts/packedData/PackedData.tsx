@@ -280,7 +280,7 @@ export const multiplePackedDataByRow = (
     const col = index % cols;
     const row = Math.floor(index / cols);
     let xOffset = col * clusterWidth + clusterWidth / 2;
-    const yOffset = row * clusterHeight + clusterHeight / 2;
+    const yOffset = row * clusterHeight + clusterHeight / 3;
 
     // If it's the last row, adjust the xOffset
     if (row === rows - 1) {
@@ -321,7 +321,7 @@ export const multiplePackedDataByRow = (
     });
     clusterData.push({
       x: xOffset,
-      y: yOffset,
+      y: yOffset - clusterHeight / 8,
       amount: totalAmount,
       width: 0,
       height: 0,
@@ -389,10 +389,11 @@ export const multiplePackedDataByRowToSquare = (
 
   // Replace amount with amountFuture
   rectangleData.forEach((cluster: any) => {
-    cluster.x = cluster.x - Math.sqrt(cluster.amount / 100000) / 2;
-    cluster.y = cluster.y + Math.sqrt(cluster.amount / 100000);
-    cluster.width = Math.sqrt(cluster.amount / 100000);
-    cluster.height = Math.sqrt(cluster.amount / 100000);
+    let scaledAmount = Math.sqrt(cluster.amount / 100000);
+    cluster.x = cluster.x - scaledAmount / 2;
+    cluster.y = cluster.y + scaledAmount;
+    cluster.width = scaledAmount;
+    cluster.height = scaledAmount;
   });
 
   return {
@@ -416,9 +417,10 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
   } = layoutDataMultiplePackedByRowToSquare;
 
   // Create a new scale for the barplot, which will contain as many bars as there are clusters
+  let axisMargin = 70;
   const xScale = scaleBand()
     .domain(rectangleData.map((d) => d.title))
-    .range([0, boundsWidth])
+    .range([axisMargin, boundsWidth])
     .padding(0.3);
 
   // Get the max amount
@@ -457,5 +459,6 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
     titleData,
     rectangleData,
     yScale,
+    xScale,
   };
 };

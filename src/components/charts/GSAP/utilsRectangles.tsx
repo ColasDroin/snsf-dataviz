@@ -16,7 +16,7 @@ export const buildRectangles = (rectangleData) => {
   }));
 };
 
-export const drawRectangles = (ctx, canvas, rects, yScale) => {
+export const drawRectangles = (ctx, canvas, rects, yScale, xScale) => {
   rects.forEach(({ x, y, width, height, amount, fill, alpha }) => {
     ctx.globalAlpha = alpha;
     ctx.fillStyle = fill;
@@ -26,7 +26,7 @@ export const drawRectangles = (ctx, canvas, rects, yScale) => {
   });
 
   if (yScale != null) {
-    drawLeftAxis(ctx, canvas, yScale);
+    drawLeftAxis(ctx, canvas, yScale, xScale);
   }
 };
 
@@ -76,10 +76,12 @@ export const tooltipHandlerRectangles = (canvas, tooltip, rects) => {
   return handleMouseMove;
 };
 
-export const drawLeftAxis = (ctx, canvas, yScale) => {
+export const drawLeftAxis = (ctx, canvas, yScale, xScale) => {
   const tickLength = 6;
-  const pixelsPerTick = 80;
+  const pixelsPerTick = 70;
   const range = yScale.range();
+  range[1] += 0;
+  const rangeX = xScale.range();
   const height = range[1] - range[0];
   const numberOfTicksTarget = Math.floor(height / pixelsPerTick);
   const ticks = yScale.ticks(numberOfTicksTarget);
@@ -90,12 +92,10 @@ export const drawLeftAxis = (ctx, canvas, yScale) => {
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
 
-  console.log(range);
-
   // Draw the main vertical axis line
   ctx.beginPath();
-  ctx.moveTo(40, range[1]);
-  ctx.lineTo(40, range[0]);
+  ctx.moveTo(rangeX[0], range[1]);
+  ctx.lineTo(rangeX[0], range[0]);
   ctx.stroke();
 
   // Draw ticks and labels
@@ -103,12 +103,38 @@ export const drawLeftAxis = (ctx, canvas, yScale) => {
     const y = yScale(value);
     // Draw tick mark
     ctx.beginPath();
-    ctx.moveTo(40, range[1] - y);
-    ctx.lineTo(40 - tickLength, range[1] - y);
+    ctx.moveTo(rangeX[0], range[1] - y);
+    ctx.lineTo(rangeX[0] - tickLength, range[1] - y);
     ctx.stroke();
 
     // Draw label
-    console.log(value);
-    ctx.fillText(value.toString(), 40 - tickLength - 5, range[1] - y);
+    ctx.fillText(
+      (value / 1000000).toString() + "M",
+      rangeX[0] - tickLength - 5,
+      range[1] - y
+    );
+  });
+
+  // Draw the yaxis label
+  ctx.save();
+  ctx.translate(rangeX[0] - 60, range[0] + height / 2); // Move label to center
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = "center";
+  ctx.fillText("Amount in CHF", 0, 0);
+  ctx.restore();
+
+  // Draw line for x-axis
+  ctx.beginPath();
+  ctx.moveTo(rangeX[0], range[1]);
+  ctx.lineTo(rangeX[1], range[1]);
+  ctx.stroke();
+
+  // Draw ticks for x-axis (which is a scaleBand)
+  xScale.domain().forEach((value, i) => {
+    const x = xScale(value) + xScale.bandwidth() / 2;
+    ctx.beginPath();
+    ctx.moveTo(x, range[1]);
+    ctx.lineTo(x, range[1] + tickLength);
+    ctx.stroke();
   });
 };

@@ -41,6 +41,7 @@ export type LayoutDataProps = {
   rectangleData?: any[] | null;
   animateToBarplot?: boolean;
   yScale?: any;
+  xScale?: any;
 };
 
 export type LayoutDataClusterProps = {
@@ -160,6 +161,7 @@ export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
         }
         animateToBarplot={chartType === "barplot"}
         yScale={layoutData.yScale}
+        xScale={layoutData.xScale}
       />
 
       {legend && (
