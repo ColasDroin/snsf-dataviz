@@ -11,7 +11,7 @@ import { scaleBand, scaleLinear, scaleSqrt } from "d3-scale";
 import { interpolateSpectral } from "d3-scale-chromatic";
 import { max, min } from "d3-array";
 import { extent } from "d3-array";
-
+import { AxisLeft } from "../axis/AxisLeft";
 //import styles from "./PackedCircles.module.css";
 
 // -------------------------------------------------------------------------------------------------
@@ -422,27 +422,34 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
     .padding(0.3);
 
   // Get the max amount
-  const maxAmount = max(rectangleData.map((d) => d.amount));
+  const maxAmount: number = max(rectangleData.map((d) => d.amount));
+
+  // Same with the yScale
+  const maxYHeight = (boundsHeight * 2) / 3;
+  const yScale = scaleLinear().domain([0, maxAmount]).range([0, maxYHeight]);
 
   // Get the bar data
   rectangleData = rectangleData.map((d, i) => {
     return {
       x: xScale(d.title),
-      y: (boundsHeight * 2) / 3,
+      y: maxYHeight,
       width: xScale.bandwidth(),
-      height: (-(d.amount / maxAmount) * boundsHeight * 2) / 3,
+      height: -yScale(d.amount),
       fill: d.fill,
       alpha: 1,
       field: d.title,
     };
   });
 
+  // Get the corresponding axis
+  const axis = <AxisLeft yScale={yScale} pixelsPerTick={30} />;
+
   // Get the titles data
   const titleData = rectangleData.map((d) => ({
     field: d.field,
     fill: d.fill,
     x: d.x + d.width / 2,
-    y: (boundsHeight * 2) / 3 + 20,
+    y: (boundsHeight * 2) / 3 + 10,
   }));
 
   return {
@@ -452,5 +459,6 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
     radiusScale,
     titleData,
     rectangleData,
+    axis,
   };
 };

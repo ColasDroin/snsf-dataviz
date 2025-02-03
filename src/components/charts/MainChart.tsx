@@ -10,10 +10,10 @@ import {
   multiplePackedDataByRow,
   multiplePackedDataByRowToSquare,
   barplotData,
-} from "@/components/charts/packedCircles/PackedCircles";
+} from "@/components/charts/packedData/PackedData";
 import { useDimensions } from "./use-dimensions";
 import { ChartGSAP } from "./GSAP/ChartGSAP";
-import { BubbleLegend } from "./packedCircles/BubbleLegend";
+import { BubbleLegend } from "./packedData/BubbleLegend";
 import data2024 from "@/../public/data/grant_2024.json";
 
 // -------------------------------------------------------------------------------------------------
@@ -40,6 +40,7 @@ export type LayoutDataProps = {
   titleData?: any[] | null;
   rectangleData?: any[] | null;
   animateToBarplot?: boolean;
+  axis?: any;
 };
 
 export type LayoutDataClusterProps = {
@@ -158,6 +159,7 @@ export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
             : null
         }
         animateToBarplot={chartType === "barplot"}
+        axis={layoutData.axis}
       />
 
       {legend && (

@@ -26,6 +26,7 @@ export const ChartGSAP = ({
   titleData = null,
   rectangleData = null,
   animateToBarplot = false,
+  axis = null,
 }: LayoutDataProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
