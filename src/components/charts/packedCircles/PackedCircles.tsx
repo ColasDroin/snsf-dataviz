@@ -273,7 +273,7 @@ export const multiplePackedDataByRow = (
   const clusterHeight = boundsHeight / rows;
 
   let circleData: any = [];
-  let titles: any = [];
+  let titleData: any = [];
   let clusterData: any = [];
   fields.forEach((field, index) => {
     let totalAmount = 0;
@@ -313,7 +313,7 @@ export const multiplePackedDataByRow = (
     });
 
     circleData = circleData.concat(clusterCircles);
-    titles.push({
+    titleData.push({
       field: field,
       fill: interpolateSpectral((2 + index) / (numClusters - 1 + 2 + 3)),
       x: xOffset,
@@ -322,8 +322,9 @@ export const multiplePackedDataByRow = (
     clusterData.push({
       x: xOffset,
       y: yOffset,
-      amountFuture: totalAmount,
-      amount: 0,
+      amount: totalAmount,
+      width: 0,
+      height: 0,
       title: field,
       fill: interpolateSpectral((2 + index) / (numClusters - 1 + 2 + 3)),
     });
@@ -349,7 +350,7 @@ export const multiplePackedDataByRow = (
     boundsWidth,
     boundsHeight,
     radiusScale,
-    titles,
+    titleData,
     rectangleData,
   };
 };
@@ -362,7 +363,7 @@ export const multiplePackedDataByRowToSquare = (
     boundsWidth,
     boundsHeight,
     radiusScale,
-    titles,
+    titleData,
     rectangleData,
   } = layoutDataMultiplePackedByRow;
 
@@ -374,12 +375,24 @@ export const multiplePackedDataByRowToSquare = (
     circle.r = 0;
   });
 
+  // Make a copy of the titles
+  titleData = titleData.map((d) => ({ ...d }));
+
+  // lower title
+  // titleData = titleData.map((d) => {
+  //   d.y = d.y - 40;
+  //   return d;
+  // });
+
   // Make a copy of the clusterData
   rectangleData = rectangleData.map((d) => ({ ...d }));
 
   // Replace amount with amountFuture
   rectangleData.forEach((cluster: any) => {
-    cluster.amount = cluster.amountFuture;
+    cluster.x = cluster.x - Math.sqrt(cluster.amount / 100000) / 2;
+    cluster.y = cluster.y;
+    cluster.width = Math.sqrt(cluster.amount / 100000);
+    cluster.height = Math.sqrt(cluster.amount / 100000);
   });
 
   return {
@@ -387,7 +400,7 @@ export const multiplePackedDataByRowToSquare = (
     boundsWidth,
     boundsHeight,
     radiusScale,
-    titles,
+    titleData,
     rectangleData,
   };
 };
@@ -417,7 +430,7 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
       x: xScale(d.title),
       y: boundsHeight,
       width: xScale.bandwidth(),
-      height: (d.amount / maxAmount) * boundsHeight,
+      height: -(d.amount / maxAmount) * boundsHeight,
       fill: d.fill,
       alpha: 1,
       field: d.title,
@@ -425,7 +438,7 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
   });
 
   // Get the titles data
-  titles = rectangleData.map((d) => ({
+  const titleData = rectangleData.map((d) => ({
     field: d.field,
     fill: d.fill,
     x: d.x + d.width / 2,
@@ -437,7 +450,7 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
     boundsWidth,
     boundsHeight,
     radiusScale,
-    titles,
+    titleData,
     rectangleData,
   };
 };

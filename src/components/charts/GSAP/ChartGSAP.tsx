@@ -12,9 +12,9 @@ import {
   buildRectangles,
   drawRectangles,
   animateRectangles,
-  animateRectanglesToBarplot,
   tooltipHandlerRectangles,
 } from "./utilsRectanlges";
+import { buildTitles, drawTitles, animateTitles } from "./utilsTitles";
 
 export const ChartGSAP = ({
   boundsWidth,
@@ -23,7 +23,7 @@ export const ChartGSAP = ({
   textData = null,
   imageData = null,
   doHover = false,
-  titles = [],
+  titleData = null,
   rectangleData = null,
   animateToBarplot = false,
 }: LayoutDataProps) => {
@@ -31,6 +31,7 @@ export const ChartGSAP = ({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [prevCircleData, setPrevCircleData] = useState(circleData);
   const [prevRectangleData, setPrevRectangleData] = useState(rectangleData);
+  const [prevTitleData, setPrevTitleData] = useState(titleData);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -39,15 +40,7 @@ export const ChartGSAP = ({
     let circles = buildCircles(prevCircleData);
 
     const drawC = () => {
-      drawCircles(
-        ctx,
-        canvas,
-        circles,
-        textData,
-        titles,
-        imageData,
-        !animateToBarplot
-      );
+      drawCircles(ctx, canvas, circles, textData, imageData);
     };
 
     let tl = gsap.timeline();
@@ -66,20 +59,22 @@ export const ChartGSAP = ({
       });
     }
 
+    if (titleData != null) {
+      let titles = buildTitles(prevTitleData || titleData);
+      const drawT = () => {
+        drawTitles(ctx, canvas, titles);
+      };
+      tl = animateTitles(tl, titles, titleData, drawT);
+    }
+
     if (rectangleData != null) {
-      if (prevRectangleData === null) {
-        setPrevRectangleData(rectangleData);
-      }
       // This is a hack to prevent prevRectangleData from being null initially... might be problematic
       let rectangles = buildRectangles(prevRectangleData || rectangleData);
       const drawR = () => {
-        drawRectangles(ctx, canvas, rectangles, animateToBarplot);
+        drawRectangles(ctx, canvas, rectangles);
       };
-      if (animateToBarplot) {
-        tl = animateRectanglesToBarplot(tl, rectangles, rectangleData, drawR);
-      } else {
-        tl = animateRectangles(tl, rectangles, rectangleData, drawR);
-      }
+      tl = animateRectangles(tl, rectangles, rectangleData, drawR);
+
       const handleMouseMoveRectangles = tooltipHandlerRectangles(
         canvas,
         tooltip,
@@ -92,6 +87,7 @@ export const ChartGSAP = ({
 
     setPrevCircleData(circleData);
     setPrevRectangleData(rectangleData);
+    setPrevTitleData(titleData);
     return () => {
       canvas.removeEventListener("mousemove", handleMouseMoveCircles);
       // canvas.removeEventListener("mousemove", handleMouseMoveRectangles);

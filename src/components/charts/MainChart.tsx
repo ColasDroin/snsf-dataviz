@@ -37,7 +37,7 @@ export type LayoutDataProps = {
   imageData?: any;
   radiusScale?: any;
   doHover?: boolean;
-  titles?: any[];
+  titleData?: any[] | null;
   rectangleData?: any[] | null;
   animateToBarplot?: boolean;
 };
@@ -143,12 +143,12 @@ export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
           chartType === "multiplePackedByRow" ||
           chartType === "multiplePackedByRowSquared"
         }
-        titles={
+        titleData={
           chartType === "multiplePackedByRow" ||
           chartType === "multiplePackedByRowSquared" ||
           chartType === "barplot"
-            ? layoutData.titles
-            : []
+            ? layoutData.titleData
+            : null
         }
         rectangleData={
           chartType === "multiplePackedByRow" ||

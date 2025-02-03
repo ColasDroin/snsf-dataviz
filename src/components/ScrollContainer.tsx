@@ -21,6 +21,7 @@ export const ScrollContainer = () => {
 
   // Step callbacks to handle scroll events
   const onStepEnter = ({ data, direction }) => {
+    console.log(data, direction);
     if (data === 1 && direction === "down") {
       setAboveStepOne(true); // Trigger gradient transition to gray
       setCurrentChart("packed");
@@ -34,12 +35,13 @@ export const ScrollContainer = () => {
       setCurrentChart("multiplePackedByRow");
     }
 
-    if (data === 5 && direction === "down") {
+    if (data === 5) {
       setCurrentChart("multiplePackedByRowSquared");
     }
   };
 
   const onStepExit = ({ data, direction }) => {
+    console.log(data, direction);
     if (data === 1 && direction === "up") {
       setAboveStepOne(false); // Revert gradient transition to red
       setCurrentChart("cross");

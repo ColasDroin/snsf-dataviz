@@ -5,21 +5,18 @@ import { LayoutDataProps } from "../MainChart";
 
 export const buildRectangles = (rectangleData) => {
   return rectangleData.map((data, i) => ({
-    x: data.x - Math.sqrt(data.amount / 100000) / 2,
+    x: data.x,
     y: data.y,
     amount: data.amount,
-    width: Math.sqrt(data.amount / 100000),
-    height: Math.sqrt(data.amount / 100000),
+    width: data.width,
+    height: data.height,
     fill: data.fill ? data.fill : "white",
     alpha: 1,
     field: data.title ? data.title : "",
   }));
 };
 
-export const drawRectangles = (ctx, canvas, rects, clear = false) => {
-  if (clear) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
+export const drawRectangles = (ctx, canvas, rects) => {
   rects.forEach(({ x, y, width, height, amount, fill, alpha }) => {
     ctx.globalAlpha = alpha;
     ctx.fillStyle = fill;
@@ -32,29 +29,10 @@ export const drawRectangles = (ctx, canvas, rects, clear = false) => {
 export const animateRectangles = (tl, rects, rectangleData, draw) => {
   tl.add(
     gsap.to(rects, {
-      x: (index) =>
-        rectangleData[index].x -
-        Math.sqrt(rectangleData[index].amount / 100000) / 2,
-      y: (index) => rectangleData[index].y,
-      width: (index) => Math.sqrt(rectangleData[index].amount / 100000),
-      height: (index) => Math.sqrt(rectangleData[index].amount / 100000),
-      fill: (index) => rectangleData[index].fill,
-      duration: 1,
-      stagger: { amount: 1 },
-      onUpdate: draw,
-    }),
-    "<"
-  );
-  return tl;
-};
-
-export const animateRectanglesToBarplot = (tl, rects, rectangleData, draw) => {
-  tl.add(
-    gsap.to(rects, {
       x: (index) => rectangleData[index].x,
       y: (index) => rectangleData[index].y,
       width: (index) => rectangleData[index].width,
-      height: (index) => -rectangleData[index].height,
+      height: (index) => rectangleData[index].height,
       fill: (index) => rectangleData[index].fill,
       duration: 1,
       stagger: { amount: 1 },
