@@ -255,19 +255,26 @@ export const multiplePackedDataByRow = (
   const boundsWidth = width - MARGIN.right - MARGIN.left;
   const boundsHeight = height - MARGIN.top - MARGIN.bottom;
 
-  // Group data by type
+  // Group data by field
   const groupedData = {};
   data.circleData.forEach((d: any) => {
     if (!groupedData[d.field]) groupedData[d.field] = [];
     groupedData[d.field].push(d);
   });
 
-  // Compute the number of clusters
-  const fields = Object.keys(groupedData);
-  const numClusters = fields.length;
+  // Compute total amount for each cluster and sort clusters by totalAmount
+  let sortedFields = Object.entries(groupedData)
+    .map(([field, nodes]: [string, any[]]) => ({
+      field,
+      nodes,
+      totalAmount: nodes.reduce((sum, d) => sum + d.amount, 0),
+      nGrants: nodes.length,
+    }))
+    .sort((a, b) => b.totalAmount - a.totalAmount); // Sort descending by totalAmount
 
-  // Determine cluster layout
-  const cols = 6; //Math.ceil(Math.sqrt(numClusters));
+  // Compute the number of clusters
+  const numClusters = sortedFields.length;
+  const cols = 6; // Define number of columns
   const rows = Math.ceil(numClusters / cols);
   const clusterWidth = boundsWidth / cols;
   const clusterHeight = boundsHeight / rows;
@@ -275,22 +282,23 @@ export const multiplePackedDataByRow = (
   let circleData: any = [];
   let titleData: any = [];
   let clusterData: any = [];
-  fields.forEach((field, index) => {
-    let totalAmount = 0;
+
+  sortedFields.forEach(({ field, nodes, totalAmount, nGrants }, index) => {
     const col = index % cols;
     const row = Math.floor(index / cols);
     let xOffset = col * clusterWidth + clusterWidth / 2;
     const yOffset = row * clusterHeight + clusterHeight / 3;
 
-    // If it's the last row, adjust the xOffset
+    // Adjust xOffset for the last row
     if (row === rows - 1) {
       const numClustersInLastRow = numClusters % cols;
       xOffset =
         (col * clusterWidth * cols) / numClustersInLastRow + clusterWidth / 1.5;
     }
 
+    // Pack clusters
     const packedCluster = pack().size([clusterWidth, clusterHeight]).padding(3)(
-      hierarchy({ children: groupedData[field] }).sum((d) => d.amount)
+      hierarchy({ children: nodes }).sum((d) => d.amount)
     );
 
     const clusterCircles = packedCluster.descendants().slice(1);
@@ -305,11 +313,10 @@ export const multiplePackedDataByRow = (
       circle.field = circle.data.field;
       circle.fill = interpolateSpectral(
         (2 + index) / (numClusters - 1 + 2 + 3)
-      ); ///dicColors[circle.data.type];
+      );
       delete circle.x;
       delete circle.y;
       delete circle.data;
-      totalAmount += circle.amount;
     });
 
     circleData = circleData.concat(clusterCircles);
@@ -323,6 +330,7 @@ export const multiplePackedDataByRow = (
       x: xOffset,
       y: yOffset - clusterHeight / 8,
       amount: totalAmount,
+      nGrants: nGrants,
       width: 0,
       height: 0,
       title: field,
@@ -339,7 +347,7 @@ export const multiplePackedDataByRow = (
     .range([min_r, max_r])
     .nice();
 
-  // sort circleData by id to ensure the order of the circles
+  // Sort circleData by id to ensure consistent order
   circleData.sort((a, b) => a.id - b.id);
 
   // Rename clusterData to rectangleData
@@ -447,6 +455,67 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
   const titleData = rectangleData.map((d) => ({
     field: d.field,
     fill: d.fill,
+    x: d.x + d.width / 2,
+    y: (boundsHeight * 2) / 3 + 10,
+    ylabel: "Total Amount (M CHF)",
+  }));
+
+  return {
+    circleData,
+    boundsWidth,
+    boundsHeight,
+    radiusScale,
+    titleData,
+    rectangleData,
+    yScale,
+    xScale,
+  };
+};
+
+export const barplotDataGrantCounts = (
+  layoutDataMultiplePackedByRowToSquare: any
+) => {
+  let {
+    circleData,
+    boundsWidth,
+    boundsHeight,
+    radiusScale,
+    titles,
+    rectangleData,
+  } = layoutDataMultiplePackedByRowToSquare;
+
+  // Create a new scale for the barplot, which will contain as many bars as there are clusters
+  let axisMargin = 70;
+  const xScale = scaleBand()
+    .domain(rectangleData.map((d) => d.title))
+    .range([axisMargin, boundsWidth])
+    .padding(0.3);
+
+  // Get the max amount
+  const maxAmount: number = max(rectangleData.map((d) => d.nGrants));
+
+  // Same with the yScale
+  const maxYHeight = (boundsHeight * 2) / 3;
+  const yScale = scaleLinear().domain([0, maxAmount]).range([0, maxYHeight]);
+
+  // Get the bar data
+  rectangleData = rectangleData.map((d, i) => {
+    return {
+      x: xScale(d.title),
+      y: maxYHeight,
+      width: xScale.bandwidth(),
+      height: yScale(d.nGrants),
+      fill: d.fill,
+      alpha: 1,
+      field: d.title,
+    };
+  });
+
+  // Get the titles data
+  const titleData = rectangleData.map((d) => ({
+    field: d.field,
+    fill: d.fill,
+    ylabel: "Number of grants",
     x: d.x + d.width / 2,
     y: (boundsHeight * 2) / 3 + 10,
   }));

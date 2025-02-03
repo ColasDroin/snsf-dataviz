@@ -10,6 +10,7 @@ import {
   multiplePackedDataByRow,
   multiplePackedDataByRowToSquare,
   barplotData,
+  barplotDataGrantCounts,
 } from "@/components/charts/packedData/PackedData";
 import { useDimensions } from "./use-dimensions";
 import { ChartGSAP } from "./GSAP/ChartGSAP";
@@ -39,7 +40,8 @@ export type LayoutDataProps = {
   doHover?: boolean;
   titleData?: any[] | null;
   rectangleData?: any[] | null;
-  animateToBarplot?: boolean;
+  fullTitles?: boolean;
+  firstBarplot?: boolean;
   yScale?: any;
   xScale?: any;
 };
@@ -97,6 +99,10 @@ export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
     return barplotData(layoutDataMultiplePackedByRowToSquare);
   }, [width, height]);
 
+  const layoutDataBarplotGrantCounts: LayoutDataProps = useMemo(() => {
+    return barplotDataGrantCounts(layoutDataMultiplePackedByRowToSquare);
+  }, [width, height]);
+
   const layoutData =
     chartType === "cross"
       ? layoutDataCross
@@ -112,6 +118,8 @@ export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
       ? layoutDataMultiplePackedByRowToSquare
       : chartType === "barplot"
       ? layoutDataBarplot
+      : chartType === "barplotGrantCounts"
+      ? layoutDataBarplotGrantCounts
       : layoutDataCross;
 
   const [showLegend, setShowLegend] = useState(false);
@@ -148,18 +156,23 @@ export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
         titleData={
           chartType === "multiplePackedByRow" ||
           chartType === "multiplePackedByRowSquared" ||
-          chartType === "barplot"
+          chartType === "barplot" ||
+          chartType === "barplotGrantCounts"
             ? layoutData.titleData
             : null
         }
         rectangleData={
           chartType === "multiplePackedByRow" ||
           chartType === "multiplePackedByRowSquared" ||
-          chartType === "barplot"
+          chartType === "barplot" ||
+          chartType === "barplotGrantCounts"
             ? layoutData.rectangleData
             : null
         }
-        animateToBarplot={chartType === "barplot"}
+        fullTitles={
+          chartType === "barplot" || chartType === "barplotGrantCounts"
+        }
+        firstBarplot={chartType === "barplot"}
         yScale={layoutData.yScale}
         xScale={layoutData.xScale}
       />

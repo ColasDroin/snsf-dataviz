@@ -26,7 +26,8 @@ export const ChartGSAP = ({
   doHover = false,
   titleData = null,
   rectangleData = null,
-  animateToBarplot = false,
+  fullTitles = true,
+  firstBarplot = false,
   yScale = null,
   xScale = null,
 }: LayoutDataProps) => {
@@ -65,7 +66,7 @@ export const ChartGSAP = ({
     if (titleData != null) {
       let titles = buildTitles(prevTitleData || titleData);
       const drawT = () => {
-        drawTitles(ctx, canvas, titles, !animateToBarplot);
+        drawTitles(ctx, canvas, titles, !fullTitles);
       };
       tl = animateTitles(tl, titles, titleData, drawT);
     }
@@ -77,10 +78,17 @@ export const ChartGSAP = ({
         drawRectangles(ctx, canvas, rectangles);
       };
       let drawAxis = null;
-      const axisAnimation = { progress: 0 };
+      const axisAnimation = { progress: firstBarplot ? 0 : 1 };
       if (yScale != null) {
         drawAxis = () => {
-          drawLeftAxis(ctx, canvas, yScale, xScale, axisAnimation.progress);
+          drawLeftAxis(
+            ctx,
+            canvas,
+            yScale,
+            xScale,
+            titleData,
+            axisAnimation.progress
+          );
         };
       }
       tl = animateRectangles(

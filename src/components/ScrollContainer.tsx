@@ -38,6 +38,14 @@ export const ScrollContainer = () => {
     if (data === 5) {
       setCurrentChart("multiplePackedByRowSquared");
     }
+
+    if (data === 6) {
+      setCurrentChart("barplot");
+    }
+
+    if (data === 7) {
+      setCurrentChart("barplotGrantCounts");
+    }
   };
 
   const onStepExit = ({ data, direction }) => {
@@ -65,6 +73,10 @@ export const ScrollContainer = () => {
 
     if (data === 5 && direction === "down") {
       setCurrentChart("barplot");
+    }
+
+    if (data === 6 && direction === "down") {
+      setCurrentChart("barplotGrantCounts");
     }
   };
 
@@ -170,12 +182,33 @@ export const ScrollContainer = () => {
           </Step>
 
           <Step data={5}>
-            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px] z-40">
+            <div className="w-full mt-[50vh] mb-[1vh] border-2 border-white h-[200px] z-40">
               <p className="text-xs md:text-xl">
                 But size can be a bit misleading as clusters were normalized to
                 all take up the same space, otherwise some disciplines would
                 barely be visible... Let's add all the grants together, for each
                 field, to see the big picture.
+              </p>
+            </div>
+          </Step>
+
+          <Step data={6}>
+            <div className="w-full mt-[50vh] mb-[1vh] border-2 border-white h-[200px] z-40">
+              <p className="text-xs md:text-xl">
+                Results are however a bit different when we look at the numbers
+                of grants attributed to each discipline (and not the total
+                amount of money). This is most likely due to the fact that
+                disciplines like philosophy or creative arts require much less
+                funding than others.
+              </p>
+            </div>
+          </Step>
+
+          <Step data={7}>
+            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px] z-40">
+              <p className="text-xs md:text-xl">
+                Finally, let's visualize how the grants are distributed across
+                the country, depending on the discipline.
               </p>
             </div>
           </Step>

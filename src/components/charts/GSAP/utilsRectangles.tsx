@@ -91,7 +91,14 @@ export const tooltipHandlerRectangles = (canvas, tooltip, rects) => {
   return handleMouseMove;
 };
 
-export const drawLeftAxis = (ctx, canvas, yScale, xScale, progress = 1) => {
+export const drawLeftAxis = (
+  ctx,
+  canvas,
+  yScale,
+  xScale,
+  titleData,
+  progress = 1
+) => {
   const tickLength = 6;
   const range = yScale.range();
   const rangeX = xScale.range();
@@ -143,11 +150,13 @@ export const drawLeftAxis = (ctx, canvas, yScale, xScale, progress = 1) => {
       ctx.stroke();
 
       // Draw vertical label
-      ctx.fillText(
-        (value / 1000000).toString() + "M",
-        rangeX[0] - tickLength - 5,
-        range[1] - y
-      );
+      let label;
+      if (titleData[0].ylabel.includes("CHF")) {
+        label = (value / 1e6).toString() + "M";
+      } else {
+        label = value.toString();
+      }
+      ctx.fillText(label, rangeX[0] - tickLength - 5, range[1] - y);
     });
 
     // Draw the y-axis label
@@ -155,7 +164,7 @@ export const drawLeftAxis = (ctx, canvas, yScale, xScale, progress = 1) => {
     ctx.translate(rangeX[0] - 60, range[0] + fullHeight / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = "center";
-    ctx.fillText("Amount in CHF", 0, 0);
+    ctx.fillText(titleData[0].ylabel, 0, 0);
     ctx.restore();
 
     // Draw horizontal axis ticks
