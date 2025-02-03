@@ -390,7 +390,7 @@ export const multiplePackedDataByRowToSquare = (
   // Replace amount with amountFuture
   rectangleData.forEach((cluster: any) => {
     cluster.x = cluster.x - Math.sqrt(cluster.amount / 100000) / 2;
-    cluster.y = cluster.y;
+    cluster.y = cluster.y + Math.sqrt(cluster.amount / 100000);
     cluster.width = Math.sqrt(cluster.amount / 100000);
     cluster.height = Math.sqrt(cluster.amount / 100000);
   });
@@ -434,15 +434,12 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
       x: xScale(d.title),
       y: maxYHeight,
       width: xScale.bandwidth(),
-      height: -yScale(d.amount),
+      height: yScale(d.amount),
       fill: d.fill,
       alpha: 1,
       field: d.title,
     };
   });
-
-  // Get the corresponding axis
-  const axis = <AxisLeft yScale={yScale} pixelsPerTick={30} />;
 
   // Get the titles data
   const titleData = rectangleData.map((d) => ({
@@ -459,6 +456,6 @@ export const barplotData = (layoutDataMultiplePackedByRowToSquare: any) => {
     radiusScale,
     titleData,
     rectangleData,
-    axis,
+    yScale,
   };
 };

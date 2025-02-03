@@ -40,7 +40,7 @@ export type LayoutDataProps = {
   titleData?: any[] | null;
   rectangleData?: any[] | null;
   animateToBarplot?: boolean;
-  axis?: any;
+  yScale?: any;
 };
 
 export type LayoutDataClusterProps = {
@@ -159,7 +159,7 @@ export const MainChart = ({ chartType, width, height }: CircleChartProps) => {
             : null
         }
         animateToBarplot={chartType === "barplot"}
-        axis={layoutData.axis}
+        yScale={layoutData.yScale}
       />
 
       {legend && (

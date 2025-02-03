@@ -11,6 +11,7 @@ import {
 import {
   buildRectangles,
   drawRectangles,
+  drawLeftAxis,
   animateRectangles,
   tooltipHandlerRectangles,
 } from "./utilsRectangles";
@@ -26,7 +27,7 @@ export const ChartGSAP = ({
   titleData = null,
   rectangleData = null,
   animateToBarplot = false,
-  axis = null,
+  yScale = null,
 }: LayoutDataProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -72,7 +73,7 @@ export const ChartGSAP = ({
       // This is a hack to prevent prevRectangleData from being null initially... might be problematic
       let rectangles = buildRectangles(prevRectangleData || rectangleData);
       const drawR = () => {
-        drawRectangles(ctx, canvas, rectangles);
+        drawRectangles(ctx, canvas, rectangles, yScale);
       };
       tl = animateRectangles(tl, rectangles, rectangleData, drawR);
 

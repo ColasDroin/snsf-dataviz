@@ -16,14 +16,18 @@ export const buildRectangles = (rectangleData) => {
   }));
 };
 
-export const drawRectangles = (ctx, canvas, rects) => {
+export const drawRectangles = (ctx, canvas, rects, yScale) => {
   rects.forEach(({ x, y, width, height, amount, fill, alpha }) => {
     ctx.globalAlpha = alpha;
     ctx.fillStyle = fill;
     ctx.beginPath();
-    ctx.rect(x, y, width, height);
+    ctx.rect(x, y, width, -height);
     ctx.fill();
   });
+
+  if (yScale != null) {
+    drawLeftAxis(ctx, canvas, yScale);
+  }
 };
 
 export const animateRectangles = (tl, rects, rectangleData, draw) => {
@@ -70,4 +74,41 @@ export const tooltipHandlerRectangles = (canvas, tooltip, rects) => {
   };
 
   return handleMouseMove;
+};
+
+export const drawLeftAxis = (ctx, canvas, yScale) => {
+  const tickLength = 6;
+  const pixelsPerTick = 80;
+  const range = yScale.range();
+  const height = range[1] - range[0];
+  const numberOfTicksTarget = Math.floor(height / pixelsPerTick);
+  const ticks = yScale.ticks(numberOfTicksTarget);
+
+  ctx.strokeStyle = "white";
+  ctx.fillStyle = "white";
+  ctx.font = "12px sans-serif";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+
+  console.log(range);
+
+  // Draw the main vertical axis line
+  ctx.beginPath();
+  ctx.moveTo(40, range[1]);
+  ctx.lineTo(40, range[0]);
+  ctx.stroke();
+
+  // Draw ticks and labels
+  ticks.forEach((value) => {
+    const y = yScale(value);
+    // Draw tick mark
+    ctx.beginPath();
+    ctx.moveTo(40, range[1] - y);
+    ctx.lineTo(40 - tickLength, range[1] - y);
+    ctx.stroke();
+
+    // Draw label
+    console.log(value);
+    ctx.fillText(value.toString(), 40 - tickLength - 5, range[1] - y);
+  });
 };
