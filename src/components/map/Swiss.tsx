@@ -17,7 +17,7 @@ type SwissChartProps = {
 };
 
 type ResponsiveSwissChartProps = {
-  chartType: string;
+    geoData: FeatureCollection;
 };
 
 // -------------------------------------------------------------------------------------------------

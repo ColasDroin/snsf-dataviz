@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { useSpring, animated } from "@react-spring/web";
 import { Scrollama, Step } from "react-scrollama";
 import { ResponsiveMainChart } from "@/components/charts/MainChart";
+import { ResponsiveSwissChart } from "@/components/map/Swiss";
+import switzerland from "@/../public/data/switzerland.geojson";
 
 export const ScrollContainer = () => {
   const [currentChart, setCurrentChart] = useState("cross");
@@ -81,7 +83,7 @@ export const ScrollContainer = () => {
   };
 
   return (
-    <div className="w-full flex items-center justify-center text-white mb-8 flex-col relative bg-gray-900">
+    <div className="w-full flex items-center justify-center text-white flex-col relative bg-gray-900">
       {/* Gradient Layers */}
       {/* Red Gradient Layer */}
       <animated.div
@@ -205,7 +207,7 @@ export const ScrollContainer = () => {
           </Step>
 
           <Step data={7}>
-            <div className="w-full mt-[50vh] mb-[90vh] border-2 border-white h-[200px] z-40">
+            <div className="w-full mt-[50vh] mb-[-200px] border-2 border-white h-[200px] z-40">
               <p className="text-xs md:text-xl">
                 Finally, let's visualize how the grants are distributed across
                 the country, depending on the discipline.
@@ -213,6 +215,14 @@ export const ScrollContainer = () => {
             </div>
           </Step>
         </Scrollama>
+      </div>
+      <div
+        className="mx-auto mt-[20vh] mb-[20vh] px-4 py-6 w-full h-[50vh] max-w-[900px] relative z-100"
+        style={{
+          border: "1px solid red",
+        }}
+      >
+        <ResponsiveSwissChart geoData={switzerland} />
       </div>
     </div>
   );

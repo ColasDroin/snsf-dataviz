@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DataViz Project Boilerplate",
+  title: "SNSF Data Visualization",
   description: "",
 };
 
