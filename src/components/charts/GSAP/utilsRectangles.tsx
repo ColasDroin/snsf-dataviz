@@ -16,7 +16,7 @@ export const buildRectangles = (rectangleData) => {
   }));
 };
 
-export const drawRectangles = (ctx, canvas, rects, yScale, xScale) => {
+export const drawRectangles = (ctx, canvas, rects) => {
   rects.forEach(({ x, y, width, height, amount, fill, alpha }) => {
     ctx.globalAlpha = alpha;
     ctx.fillStyle = fill;
@@ -24,13 +24,16 @@ export const drawRectangles = (ctx, canvas, rects, yScale, xScale) => {
     ctx.rect(x, y, width, -height);
     ctx.fill();
   });
-
-  if (yScale != null) {
-    drawLeftAxis(ctx, canvas, yScale, xScale);
-  }
 };
 
-export const animateRectangles = (tl, rects, rectangleData, draw) => {
+export const animateRectangles = (
+  tl,
+  rects,
+  rectangleData,
+  draw,
+  drawAxis = null,
+  axisAnimation = null
+) => {
   tl.add(
     gsap.to(rects, {
       x: (index) => rectangleData[index].x,
@@ -44,6 +47,18 @@ export const animateRectangles = (tl, rects, rectangleData, draw) => {
     }),
     "<"
   );
+
+  if (drawAxis != null) {
+    tl.add(
+      gsap.to(axisAnimation, {
+        progress: 1,
+        duration: 1,
+        ease: "power1.out",
+        onUpdate: drawAxis,
+      })
+      //"<"
+    );
+  }
   return tl;
 };
 
@@ -76,65 +91,75 @@ export const tooltipHandlerRectangles = (canvas, tooltip, rects) => {
   return handleMouseMove;
 };
 
-export const drawLeftAxis = (ctx, canvas, yScale, xScale) => {
+export const drawLeftAxis = (ctx, canvas, yScale, xScale, progress = 1) => {
   const tickLength = 6;
-  const pixelsPerTick = 70;
   const range = yScale.range();
-  range[1] += 0;
   const rangeX = xScale.range();
-  const height = range[1] - range[0];
-  const numberOfTicksTarget = Math.floor(height / pixelsPerTick);
-  const ticks = yScale.ticks(numberOfTicksTarget);
+  const fullHeight = range[1] - range[0];
 
+  // Save current styles
   ctx.strokeStyle = "white";
   ctx.fillStyle = "white";
   ctx.font = "12px sans-serif";
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
 
-  // Draw the main vertical axis line
+  // Animate vertical axis line drawing using dash offset
+  const lineLength = fullHeight;
+  ctx.save();
+  ctx.setLineDash([lineLength]);
+  // Here, we animate the dash offset from full length to 0
+  ctx.lineDashOffset = lineLength * (1 - progress);
   ctx.beginPath();
   ctx.moveTo(rangeX[0], range[1]);
   ctx.lineTo(rangeX[0], range[0]);
   ctx.stroke();
-
-  // Draw ticks and labels
-  ticks.forEach((value) => {
-    const y = yScale(value);
-    // Draw tick mark
-    ctx.beginPath();
-    ctx.moveTo(rangeX[0], range[1] - y);
-    ctx.lineTo(rangeX[0] - tickLength, range[1] - y);
-    ctx.stroke();
-
-    // Draw label
-    ctx.fillText(
-      (value / 1000000).toString() + "M",
-      rangeX[0] - tickLength - 5,
-      range[1] - y
-    );
-  });
-
-  // Draw the yaxis label
-  ctx.save();
-  ctx.translate(rangeX[0] - 60, range[0] + height / 2); // Move label to center
-  ctx.rotate(-Math.PI / 2);
-  ctx.textAlign = "center";
-  ctx.fillText("Amount in CHF", 0, 0);
   ctx.restore();
 
-  // Draw line for x-axis
-  ctx.beginPath();
-  ctx.moveTo(rangeX[0], range[1]);
-  ctx.lineTo(rangeX[1], range[1]);
-  ctx.stroke();
+  // Only draw ticks and labels when the line is fully drawn
+  if (progress === 1) {
+    // Draw ticks and labels for the vertical axis
+    const pixelsPerTick = 70;
+    const numberOfTicksTarget = Math.floor(fullHeight / pixelsPerTick);
+    const ticks = yScale.ticks(numberOfTicksTarget);
 
-  // Draw ticks for x-axis (which is a scaleBand)
-  xScale.domain().forEach((value, i) => {
-    const x = xScale(value) + xScale.bandwidth() / 2;
+    ticks.forEach((value) => {
+      const y = yScale(value);
+      // Draw tick mark
+      ctx.beginPath();
+      ctx.moveTo(rangeX[0], range[1] - y);
+      ctx.lineTo(rangeX[0] - tickLength, range[1] - y);
+      ctx.stroke();
+
+      // Draw label
+      ctx.fillText(
+        (value / 1000000).toString() + "M",
+        rangeX[0] - tickLength - 5,
+        range[1] - y
+      );
+    });
+
+    // Draw the y-axis label
+    ctx.save();
+    ctx.translate(rangeX[0] - 60, range[0] + fullHeight / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = "center";
+    ctx.fillText("Amount in CHF", 0, 0);
+    ctx.restore();
+
+    // Draw x-axis line
     ctx.beginPath();
-    ctx.moveTo(x, range[1]);
-    ctx.lineTo(x, range[1] + tickLength);
+    ctx.moveTo(rangeX[0], range[1]);
+    ctx.lineTo(rangeX[1], range[1]);
     ctx.stroke();
-  });
+
+    // Draw ticks for x-axis (assuming scaleBand)
+    xScale.domain().forEach((value, i) => {
+      const x = xScale(value) + xScale.bandwidth() / 2;
+      ctx.beginPath();
+      ctx.moveTo(x, range[1]);
+      ctx.lineTo(x, range[1] + tickLength);
+      ctx.stroke();
+    });
+  }
 };

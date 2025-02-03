@@ -74,9 +74,23 @@ export const ChartGSAP = ({
       // This is a hack to prevent prevRectangleData from being null initially... might be problematic
       let rectangles = buildRectangles(prevRectangleData || rectangleData);
       const drawR = () => {
-        drawRectangles(ctx, canvas, rectangles, yScale, xScale);
+        drawRectangles(ctx, canvas, rectangles);
       };
-      tl = animateRectangles(tl, rectangles, rectangleData, drawR);
+      let drawAxis = null;
+      const axisAnimation = { progress: 0 };
+      if (yScale != null) {
+        drawAxis = () => {
+          drawLeftAxis(ctx, canvas, yScale, xScale, axisAnimation.progress);
+        };
+      }
+      tl = animateRectangles(
+        tl,
+        rectangles,
+        rectangleData,
+        drawR,
+        drawAxis,
+        axisAnimation
+      );
 
       const handleMouseMoveRectangles = tooltipHandlerRectangles(
         canvas,
